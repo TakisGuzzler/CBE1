@@ -11,14 +11,27 @@ with open(input_filename, 'r', encoding='utf-8') as file:
     lines = file.readlines()
 
 # Loop through each line and classify based on the speaker
+current_speaker = None  # Keep track of the current speaker
+
 for line in lines:
-    line = line.strip()  # Remove any leading/trailing whitespace
-    if line.startswith("ROMNEY:"):
-        romney_lines.append(line.replace("ROMNEY:", "").strip())
-    elif line.startswith("OBAMA:"):
-        obama_lines.append(line.replace("OBAMA:", "").strip())
-    elif line.startswith("SCHIEFFER:"):
-        moderator_lines.append(line.replace("SCHIEFFER:", "").strip())
+    stripped_line = line.strip()  # Remove leading/trailing whitespace
+    
+    if stripped_line.startswith("ROMNEY:"):
+        current_speaker = 'ROMNEY'
+        romney_lines.append(stripped_line.replace("ROMNEY:", "").strip())
+    elif stripped_line.startswith("OBAMA:"):
+        current_speaker = 'OBAMA'
+        obama_lines.append(stripped_line.replace("OBAMA:", "").strip())
+    elif stripped_line.startswith("SCHIEFFER:"):
+        current_speaker = 'SCHIEFFER'
+        moderator_lines.append(stripped_line.replace("SCHIEFFER:", "").strip())
+    elif current_speaker:  # If there's a current speaker, add the line to their dialogue
+        if current_speaker == 'ROMNEY':
+            romney_lines.append(stripped_line)
+        elif current_speaker == 'OBAMA':
+            obama_lines.append(stripped_line)
+        elif current_speaker == 'SCHIEFFER':
+            moderator_lines.append(stripped_line)
 
 # Write Romney's lines to a file
 with open('romney.txt', 'w', encoding='utf-8') as romney_file:
