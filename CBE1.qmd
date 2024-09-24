@@ -1,13 +1,6 @@
 ---
 title: "CBE1"
-date: last-modified
-format:
-  pdf:
-    number-sections: true
-include-in-header: 
-  text: |
-    \usepackage{fvextra}
-    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+format: pdf
 ---
 
 # Introduction:
@@ -20,8 +13,34 @@ include-in-header:
 - Obtained transcripts online and split them by who was speaking
 - 3 groups for each transcript: Democrat, Republican, and Moderator
 
+```{r, include=FALSE}
+library(quanteda)
+library(quanteda.textstats)
+library(tidyverse)
+library(gt)
+source("../R/helper_functions.R")
+```
+
+```{r, include=FALSE}
+obama_txt <- readLines("obama.txt")
+obama_freq <- obama_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+```
+
+```{r, echo=FALSE}
+head(obama_freq)
+```
+
 # Methods:
 You should clearly explain which methods you chose and why.
+
 
 # Results:
 The results should begin with descriptive analysis or EDA (exploratory data analysis) before moving on to other kinds of analysis/modeling. Be sure your visualizations are well-designed and properly captioned. Also, be sure to follow the appropriate conventions for reporting your statistical results as outlined in Brezina.
