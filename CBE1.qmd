@@ -1,6 +1,13 @@
 ---
 title: "CBE1"
-format: pdf
+date: last-modified
+format:
+  pdf:
+    number-sections: true
+include-in-header: 
+  text: |
+    \usepackage{fvextra}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 ---
 
 # Introduction:
