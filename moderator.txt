@@ -4,7 +4,7 @@ This one’s on foreign policy. I’m Bob Schieffer of CBS News. The questions a
 
 The audience has taken a vow of silence — no applause, no reaction of any kind, except right now when we welcome President Barack Obama and Governor Mitt Romney.
 
-(APPLAUSE)
+
 
 Gentlemen, your campaigns have agreed to certain rules and they are simple. They’ve asked me to divide the evening into segments. I’ll pose a question at the beginning of each segment. You will each have two minutes to respond and then we will have a general discussion until we move to the next segment.
 
@@ -46,7 +46,7 @@ Well —
 
 Can we get a quick response, Mr. President, because I want to…
 
-(CROSSTALK)
+
 
 May I ask you, you know, during the Egyptian turmoil, there came a point when you said it was time for President Mubarak to go.
 
@@ -64,7 +64,7 @@ Governor Romney, “wrong and reckless” policies?
 
 Let me get back to foreign policy.
 
-(CROSSTALK)
+
 
 Can I just get back…
 
@@ -82,7 +82,7 @@ Governor, you say you want a bigger military. You want a bigger Navy. You don’
 
 But can you do this without driving deeper…
 
-(CROSSTALK)
+
 
 ROMNEHY: The good news is (inaudible). I’d be happy to have you take a look. Come on our website. You look at how we get to a balanced budget within eight to 10 years. We do it by getting — by reducing spending in a whole series of programs. By the way, number one I get rid of is Obamacare.
 
@@ -94,9 +94,9 @@ As a governor, I thought please, give me this program. I can run this more effic
 
 But the military — let’s get back to the military, though.
 
-(CROSSTALK) SCHIEFFER: That’s what I’m trying…
+ SCHIEFFER: That’s what I’m trying…
 
-(CROSSTALK)
+
 
 All right.
 
@@ -178,4 +178,3 @@ Gentlemen, thank you both so much. That brings an end to this year’s debates a
 
 Good night.
 
-© COPYRIGHT 2020 THE COMMISSION ON PRESIDENTIAL DEBATES. ALL RIGHTS RESERVED.
