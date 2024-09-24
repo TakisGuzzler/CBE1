@@ -1,0 +1,23 @@
+---
+title: "CBE1"
+format: pdf
+---
+
+# Introduction:
+- Comparison of presidential debates and how they have changed over the past decade
+- Changes over time for parties, incumbents, moderators, etc.
+- Types of words used, amount of words spoken, other differences
+
+# Data:
+- First presidential debates for Obama vs Romney and Harris vs Trump
+- Obtained transcripts online and split them by who was speaking
+- 3 groups for each transcript: Democrat, Republican, and Moderator
+
+# Methods:
+You should clearly explain which methods you chose and why.
+
+# Results:
+The results should begin with descriptive analysis or EDA (exploratory data analysis) before moving on to other kinds of analysis/modeling. Be sure your visualizations are well-designed and properly captioned. Also, be sure to follow the appropriate conventions for reporting your statistical results as outlined in Brezina.
+
+# Discussion:
+What conclusions might you draw from your findings? Do they suggest interesting directions for further study? If your CBE didn’t work out the way you had hoped/expected, do you have any intuitions as to why? What are the limitations of your study and approach?
