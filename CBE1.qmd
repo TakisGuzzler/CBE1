@@ -1,17 +1,38 @@
 ---
-title: "CBE1"
-format: pdf
+title: "CBE 1"
+author: "Amalia, Lauren, and Jenny"
+date: last-modified
+format:
+  pdf:
+    number-sections: true
+    indent: true
+    toc: true
+    include-in-header:
+      text: |
+        \addtokomafont{disposition}{\rmfamily}
+bibliography: references/cbe-1-refs.bib
+execute:
+  echo: false
 ---
 
-# Introduction:
+# Introduction
+
+* What (very, very briefly) is the context? In other words, what's the topic/territory?
+* What is your research question?
+* What drew you to this question? Why is it interesting/important?
+
 - Comparison of presidential debates and how they have changed over the past decade
 - Changes over time for parties, incumbents, moderators, etc.
 - Types of words used, amount of words spoken, other differences
 
-# Data:
-- First presidential debates for Obama vs Romney and Harris vs Trump
-- Obtained transcripts online and split them by who was speaking
-- 3 groups for each transcript: Democrat, Republican, and Moderator
+# Data
+
+* What are data you're using?
+* Where do they come from? How were they collected/compiled?
+* Describe the data and include a summary table of the corpus.
+* Use the proper syntax to reference your tables (and figures); see the example at the end of this paragraph. <https://quarto.org/docs/authoring/cross-references.html>
+
+The data for this study consists of the first presidential debate transcripts from Obama vs. Romney (2012) and Harris vs. Trump (2020). These transcripts were obtained online and then divided based on who was speaking, with three groups identified for each debate: Democrat, Republican, and Moderator. Table 1 below summarizes the corpus: 
 
 ```{r, include=FALSE}
 library(quanteda)
@@ -22,6 +43,7 @@ source("../R/helper_functions.R")
 ```
 
 ```{r, include=FALSE}
+#processing all 6 texts
 obama_txt <- readLines("obama.txt")
 obama_freq <- obama_txt %>%
 corpus() %>%
@@ -32,18 +54,240 @@ as_tibble() %>%
 dplyr::select(feature, frequency) %>%
 rename(Token = feature, AF = frequency) %>%
 mutate(RF = AF/sum(AF)*100)
+
+trump_txt <- readLines("trump.txt")
+trump_freq <- trump_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+
+romney_txt <- readLines("romney.txt")
+romney_freq <- romney_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+
+harris_txt <- readLines("harris.txt")
+harris_freq <- harris_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+
+obama_mod_txt <- readLines("2012_moderator.txt")
+obama_mod_freq <- obama_mod_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+
+harris_mod_txt <- readLines("2024_moderators.txt")
+harris_mod_freq <- harris_mod_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+
+
 ```
 
-```{r, echo=FALSE}
-head(obama_freq)
+
+
+```{r}
+
+#overall sentiments of the texts
+library(sentimentr)
+obama_sentiment_scores <- sentiment(obama_txt)
+obama_overall_sentiment <- mean(obama_sentiment_scores$sentiment)
+print(obama_overall_sentiment)
+
+trump_sentiment_scores <- sentiment(trump_txt)
+trump_overall_sentiment <- mean(trump_sentiment_scores$sentiment)
+print(trump_overall_sentiment)
+
+romney_sentiment_scores <- sentiment(romney_txt)
+romney_overall_sentiment <- mean(romney_sentiment_scores$sentiment)
+print(romney_overall_sentiment)
+
+harris_sentiment_scores <- sentiment(harris_txt)
+harris_overall_sentiment <- mean(harris_sentiment_scores$sentiment)
+print(harris_overall_sentiment)
+
+harris_mod_sentiment_scores <- sentiment(harris_mod_txt)
+harris_mod_overall_sentiment <- mean(harris_mod_sentiment_scores$sentiment)
+print(harris_mod_overall_sentiment)
+
+obama_mod_sentiment_scores <- sentiment(obama_mod_txt)
+obama_mod_overall_sentiment <- mean(obama_mod_sentiment_scores$sentiment)
+print(obama_mod_overall_sentiment)
+```
+```{r}
+#| label: tbl-corpus
+#| tbl-cap: "Here's a table."
+
+head(mtcars) |>
+  gt::gt()
+
 ```
 
-# Methods:
-You should clearly explain which methods you chose and why.
+
+# Methods
+
+* Efficiently describe your methods.
+* Explain why you chose these methods. You have many options (from this course and elsewhere). What is the explanatory power of what you're doing here?
+* Note that this section and the previous one should work together. You are likely to justify your selection of the data in the Data section and what you're doing with those data here.
+* Cite sources where appropriate. For example, if you're carrying out a Biber-esqu multi-dimensional analysis, cite a couple of similar studies that use this method. Citations can signal both the validity of the methods and allow you to be very efficient in your descriptions. For including citations, see the examples at the end of the next two paragraphs. <https://quarto.org/docs/authoring/citations.html>
 
 
-# Results:
-The results should begin with descriptive analysis or EDA (exploratory data analysis) before moving on to other kinds of analysis/modeling. Be sure your visualizations are well-designed and properly captioned. Also, be sure to follow the appropriate conventions for reporting your statistical results as outlined in Brezina.
+```{r}
+library(gt)
+library(syuzhet)
+library(tidyverse)
+```
 
-# Discussion:
-What conclusions might you draw from your findings? Do they suggest interesting directions for further study? If your CBE didn’t work out the way you had hoped/expected, do you have any intuitions as to why? What are the limitations of your study and approach?
+```{r}
+par(mfrow = c(1, 3))
+
+
+obama <- str_squish(obama_txt)
+obama_sentences <- get_sentences(obama)
+
+obama_sentiment <- get_sentiment(obama_sentences)
+obama_dct <- get_dct_transform(obama_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+obama_dct <- data.frame(dct = obama_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(obama_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence",main = "Obama", col = "red")
+
+romney <- str_squish(romney_txt)
+romney_sentences <- get_sentences(romney)
+
+romney_sentiment <- get_sentiment(romney_sentences)
+romney_dct <- get_dct_transform(romney_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+romney_dct <- data.frame(dct = romney_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(romney_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "Romney",col = "red")
+
+obama_mod <- str_squish(obama_mod_txt)
+obama_mod_sentences <- get_sentences(obama_mod)
+
+obama_mod_sentiment <- get_sentiment(obama_mod_sentences)
+obama_mod_dct <- get_dct_transform(obama_mod_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+obama_mod_dct <- data.frame(dct = obama_mod_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(obama_mod_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "2012 Moderator", col = "red")
+# mtext("Sentiment vs. Time for the 2012 Presidential Debate",side = 3, line = -2, outer = TRUE, cex = 1)
+
+```
+
+
+```{r}
+par(mfrow = c(1, 3))
+trump <- str_squish(trump_txt)
+trump_sentences <- get_sentences(trump)
+
+trump_sentiment <- get_sentiment(trump_sentences)
+trump_dct <- get_dct_transform(trump_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+trump_dct <- data.frame(dct = trump_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(trump_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "Trump", col = "red")
+
+harris <- str_squish(harris_txt)
+harris_sentences <- get_sentences(harris)
+
+harris_sentiment <- get_sentiment(harris_sentences)
+harris_dct <- get_dct_transform(harris_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+harris_dct <- data.frame(dct = harris_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(harris_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "Harris",col = "red")
+
+harris_mod <- str_squish(harris_mod_txt)
+harris_mod_sentences <- get_sentences(harris_mod)
+
+harris_mod_sentiment <- get_sentiment(harris_mod_sentences)
+harris_mod_dct <- get_dct_transform(harris_mod_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+harris_mod_dct <- data.frame(dct = harris_mod_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(harris_mod_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "2024 Moderators", col = "red")
+
+```
+
+# Results
+
+```{r}
+#| label: fig-result
+#| fig-cap: "Here's a figure"
+
+ggplot2::ggplot(mtcars, ggplot2::aes(x=hp, y=mpg, color=as.factor(cyl))) +
+    ggplot2::geom_point(size=3) +
+    ggplot2::scale_color_discrete(name="Number of\ncylinders")
+
+```
+
+
+* Be sure your visualizations are well-designed and properly captioned. Note that the toy example in [@fig-result] is **not good!**
+* Also, be sure to follow the appropriate conventions for reporting your statistical results as outlined in Brezina.
+* Be strategic and selective about what results you choose to show. Even in your final project (which is much more complete and elaborated than either of the coffee-break experiments) you are not going to show **all of your work**. You must decide what is most interesting/explanatory.
+
+
+Fames commodo torquent fusce; platea pharetra ultricies torquent fames. Sollicitudin nulla porta luctus vehicula ad. Rhoncus sodales conubia fermentum mus sem magnis lobortis ex. Parturient auctor tempus feugiat ante lobortis lacus egestas rutrum ut. Donec fringilla semper rhoncus; molestie risus elementum. Atortor eu convallis faucibus scelerisque fusce. Et dolor aenean praesent montes mi adipiscing nascetur viverra maximus. Accumsan pharetra eu; pretium laoreet platea maximus per nisl. Rhoncus ante volutpat senectus vulputate hac neque rhoncus.
+
+## A subsection
+
+
+## Another subsection
+
+
+
+# Discussion
+
+* What conclusions might you draw from your findings?
+* The coffee-break experiments are meant to be exploratory and provisional. For these reports, you can suggest what seemed to work or what didn't. If things didn't go according to plan, you might posit an explanation as to why you think it didn't work out as you envisioned.
+* If you were to elaborate this into a more fully realized analysis, what might you do next?
+
+
+# Acknowledgments {.appendix}
+
+If you used Generative AI to assist you in the writing of the report, describe how you used the LLM as part of your writing process here. For example, did you use it help generate a first draft? Or perhaps to revise your prose as you finalized your report? Finally, evaluate its usefulness. Did you find it helpful? If you didn't use an LLM as part of your process, simply delete this secton.
+
+# Works Cited
+
