@@ -171,7 +171,7 @@ The overall sentiment analysis of the presidential debate transcripts produced t
 * Cite sources where appropriate. For example, if you're carrying out a Biber-esqu multi-dimensional analysis, cite a couple of similar studies that use this method. Citations can signal both the validity of the methods and allow you to be very efficient in your descriptions. For including citations, see the examples at the end of the next two paragraphs. <https://quarto.org/docs/authoring/citations.html>
 
 
-```{r}
+```{r, fig.cap="Emotional Valence vs. Time for the 2012 Debate Participants"}
 par(mfrow = c(1, 3))
 
 
@@ -215,7 +215,7 @@ plot(obama_mod_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valenc
 ```
 
 
-```{r}
+```{r fig.cap="Emotional Valence vs. Time for the 2024 Debate Participants"}
 par(mfrow = c(1, 3))
 trump <- str_squish(trump_txt)
 trump_sentences <- get_sentences(trump)
@@ -254,6 +254,10 @@ harris_mod_dct <- data.frame(dct = harris_mod_dct) %>%
 plot(harris_mod_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "2024 Moderators", col = "red")
 
 ```
+
+First, we compare the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time. We utilized the sentimentr and text libraries in R for the analysis, cleaning the text data and segmenting it into sentences to calculate sentiment scores. 
+
+This method was chosen because it effectively captures the shifts in sentiment across different segments of the debates, showing how sentiment can vary not only between candidates but also across time during each debate. It also makes easier to identify trends and compare emotional responses from the Democrats, Republicans, and moderators. 
 
 
 
