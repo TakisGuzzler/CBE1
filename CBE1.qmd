@@ -21,9 +21,12 @@ execute:
 * What is your research question?
 * What drew you to this question? Why is it interesting/important?
 
-- Comparison of presidential debates and how they have changed over the past decade
-- Changes over time for parties, incumbents, moderators, etc.
-- Types of words used, amount of words spoken, other differences
+<!-- - Comparison of presidential debates and how they have changed over the past decade -->
+<!-- - Changes over time for parties, incumbents, moderators, etc. -->
+<!-- - Types of words used, amount of words spoken, other differences -->
+
+
+This project conducts a sentiment analysis to compare the sentiment expressed by Democrats, Republicans, and moderators in presidential debates, focusing on how it has changed over time. We analyze debates from 2012 and 2024 to explore shifts in tone and emotional language across political parties and debate roles. This question is interesting as it reveals how changes in debate sentiment reflect shifts in the way politicians communicate, which is especially relevant with the upcoming presidential election and the recent debates. 
 
 # Data
 
@@ -32,7 +35,7 @@ execute:
 * Describe the data and include a summary table of the corpus.
 * Use the proper syntax to reference your tables (and figures); see the example at the end of this paragraph. <https://quarto.org/docs/authoring/cross-references.html>
 
-The data for this study consists of the first presidential debate transcripts from Obama vs. Romney (2012) and Harris vs. Trump (2020). These transcripts were obtained online and then divided based on who was speaking, with three groups identified for each debate: Democrat, Republican, and Moderator. Table 1 below summarizes the corpus: 
+The data for this study consists of the first presidential debate transcripts from Obama vs. Romney (2012) and Harris vs. Trump (2020). These transcripts were obtained online and then divided based on who was speaking, with three groups identified for each debate: Democrat, Republican, and Moderator. 
 
 ```{r, include=FALSE}
 library(quanteda)
@@ -250,6 +253,8 @@ harris_mod_dct <- data.frame(dct = harris_mod_dct) %>%
 plot(harris_mod_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "2024 Moderators", col = "red")
 
 ```
+
+
 
 # Results
 
