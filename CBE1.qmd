@@ -41,7 +41,12 @@ The data for this study consists of the first presidential debate transcripts fr
 library(quanteda)
 library(quanteda.textstats)
 library(tidyverse)
+library(sentimentr)
+library(knitr)
 library(gt)
+library(gt)
+library(syuzhet)
+library(tidyverse)
 source("../R/helper_functions.R")
 ```
 
@@ -121,40 +126,42 @@ mutate(RF = AF/sum(AF)*100)
 ```{r}
 
 #overall sentiments of the texts
-library(sentimentr)
 obama_sentiment_scores <- sentiment(obama_txt)
 obama_overall_sentiment <- mean(obama_sentiment_scores$sentiment)
-print(obama_overall_sentiment)
 
 trump_sentiment_scores <- sentiment(trump_txt)
 trump_overall_sentiment <- mean(trump_sentiment_scores$sentiment)
-print(trump_overall_sentiment)
 
 romney_sentiment_scores <- sentiment(romney_txt)
 romney_overall_sentiment <- mean(romney_sentiment_scores$sentiment)
-print(romney_overall_sentiment)
 
 harris_sentiment_scores <- sentiment(harris_txt)
 harris_overall_sentiment <- mean(harris_sentiment_scores$sentiment)
-print(harris_overall_sentiment)
 
 harris_mod_sentiment_scores <- sentiment(harris_mod_txt)
 harris_mod_overall_sentiment <- mean(harris_mod_sentiment_scores$sentiment)
-print(harris_mod_overall_sentiment)
 
 obama_mod_sentiment_scores <- sentiment(obama_mod_txt)
 obama_mod_overall_sentiment <- mean(obama_mod_sentiment_scores$sentiment)
-print(obama_mod_overall_sentiment)
 ```
+
 ```{r}
-#| label: tbl-corpus
-#| tbl-cap: "Here's a table."
+sentiment_results <- data.frame(
+  Speaker = c("Obama", "Romney", "Trump", "Harris", "Harris Moderator", "Obama Moderator"),
+  Overall_Sentiment = c(
+    mean(obama_sentiment_scores$sentiment),
+    mean(romney_sentiment_scores$sentiment),
+    mean(trump_sentiment_scores$sentiment),
+    mean(harris_sentiment_scores$sentiment),
+    mean(harris_mod_sentiment_scores$sentiment),
+    mean(obama_mod_sentiment_scores$sentiment)
+  )
+)
 
-head(mtcars) |>
-  gt::gt()
-
+kable(sentiment_results, caption = "Overall Sentiment Scores of Presidential Debate Speakers")
 ```
 
+The overall sentiment analysis of the presidential debate transcripts produced the following overall sentiment scores for each participant. The results indicate that Obama, Romney, and Harris displayed positive sentiments, while Trump had a slightly negative sentiment. The moderators for both debates showed slightly positive sentiment scores.
 
 # Methods
 
@@ -163,12 +170,6 @@ head(mtcars) |>
 * Note that this section and the previous one should work together. You are likely to justify your selection of the data in the Data section and what you're doing with those data here.
 * Cite sources where appropriate. For example, if you're carrying out a Biber-esqu multi-dimensional analysis, cite a couple of similar studies that use this method. Citations can signal both the validity of the methods and allow you to be very efficient in your descriptions. For including citations, see the examples at the end of the next two paragraphs. <https://quarto.org/docs/authoring/citations.html>
 
-
-```{r}
-library(gt)
-library(syuzhet)
-library(tidyverse)
-```
 
 ```{r}
 par(mfrow = c(1, 3))
