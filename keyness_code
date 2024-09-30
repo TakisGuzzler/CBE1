@@ -1,0 +1,214 @@
+```{r, include=FALSE}
+#POS parsing for Verbs to make Keyness Tables
+#got most of this code from notes
+#nn to match nouns and jj to match adjectives
+
+
+#got function from chat gpt
+remove_pos <- function(tokens) {
+  # Convert tokens to a character vector, remove POS tags, and convert back to tokens
+  tokens_clean <- str_replace_all(as.character(tokens), "_[A-Z]+$", "")
+  return(tokens(tokens_clean))
+}
+
+ud_model <- udpipe_load_model("../models/english-ewt-ud-2.5-191206.udpipe")
+obama_annotations <- udpipe(obama_txt, ud_model)
+rommney_annotations <- udpipe(romney_txt, ud_model)
+harris_annotations <- udpipe(harris_txt, ud_model)
+trump_annotations <- udpipe(trump_txt, ud_model)
+
+```
+
+```{r, include=FALSE}
+##OBAMA SECTION ##
+anno_obama_tkns <- obama_annotations %>%
+  dplyr::select(doc_id, sentence_id, token_id, token, lemma, upos, xpos, head_token_id, dep_rel) %>%
+  rename(pos = upos, tag = xpos) %>%
+  structure(class = c("spacyr_parsed", "data.frame")) %>%
+  as.tokens(include_pos = "tag", concatenator = "_")
+
+obama_doc_categories <- names(anno_obama_tkns) %>%
+  data.frame(text_type = .) %>%
+  mutate(text_type = str_extract(text_type, "^[a-z]+"))
+
+docvars(anno_obama_tkns) <- obama_doc_categories
+
+obama_all_dfm <- dfm(anno_obama_tkns)
+
+obama_tokens_clean <- anno_obama_tkns %>%
+  tokens_select("^.*jj$", selection = "keep", valuetype = "regex", case_insensitive = T) %>%
+  tokens() %>%
+  remove_pos()
+
+obama_dfm <- dfm(obama_tokens_clean)
+
+#frequency report for obama
+textstat_frequency(obama_dfm, n = 1000) |>
+  gt()
+
+## sentiment token linking using the obama dfm ##
+tokens_df <- data.frame(word = unlist(obama_tokens_clean))
+# Load sentiment lexicon (e.g., Bing lexicon)
+sentiment_lexicon <- get_sentiments("bing")
+# Join DFM words with sentiment scores
+sentiment_scores <- tokens_df %>%
+  inner_join(sentiment_lexicon, by = "word")
+
+sentiment_scores
+
+```
+
+```{r, include=FALSE}
+##ROMNEY SECTION ##
+anno_romney_tkns <- rommney_annotations %>%
+  dplyr::select(doc_id, sentence_id, token_id, token, lemma, upos, xpos, head_token_id, dep_rel) %>%
+  rename(pos = upos, tag = xpos) %>%
+  structure(class = c("spacyr_parsed", "data.frame")) %>%
+  as.tokens(include_pos = "tag", concatenator = "_")
+
+romney_doc_categories <- names(anno_romney_tkns) %>%
+  data.frame(text_type = .) %>%
+  mutate(text_type = str_extract(text_type, "^[a-z]+"))
+
+docvars(anno_romney_tkns) <- romney_doc_categories
+
+romney_all_dfm <- dfm(anno_romney_tkns)
+
+romney_tokens_clean <- anno_romney_tkns %>%
+  tokens_select("^.*jj$", selection = "keep", valuetype = "regex", case_insensitive = T) %>%
+  tokens() %>%
+  remove_pos()
+
+romney_dfm <- dfm(romney_tokens_clean)
+
+textstat_frequency(romney_dfm, n = 1000) |>
+  gt()
+
+```
+
+
+```{r, include=FALSE}
+##HARRIS SECTION ##
+anno_harris_tkns <- harris_annotations %>%
+  dplyr::select(doc_id, sentence_id, token_id, token, lemma, upos, xpos, head_token_id, dep_rel) %>%
+  rename(pos = upos, tag = xpos) %>%
+  structure(class = c("spacyr_parsed", "data.frame")) %>%
+  as.tokens(include_pos = "tag", concatenator = "_")
+
+harris_doc_categories <- names(anno_harris_tkns) %>%
+  data.frame(text_type = .) %>%
+  mutate(text_type = str_extract(text_type, "^[a-z]+"))
+
+docvars(anno_harris_tkns) <- harris_doc_categories
+
+harris_all_dfm <- dfm(anno_harris_tkns)
+
+harris_tokens_clean <- anno_harris_tkns %>%
+  tokens_select("^.*jj$", selection = "keep", valuetype = "regex", case_insensitive = T) %>%
+  tokens() %>%
+  remove_pos()
+
+harris_dfm <- dfm(harris_tokens_clean)
+
+textstat_frequency(harris_dfm, n = 1000) |>
+  gt()
+
+```
+
+```{r, include=FALSE}
+##TRUMP SECTION ##
+anno_trump_tkns <- trump_annotations %>%
+  dplyr::select(doc_id, sentence_id, token_id, token, lemma, upos, xpos, head_token_id, dep_rel) %>%
+  rename(pos = upos, tag = xpos) %>%
+  structure(class = c("spacyr_parsed", "data.frame")) %>%
+  as.tokens(include_pos = "tag", concatenator = "_")
+
+trump_doc_categories <- names(anno_trump_tkns) %>%
+  data.frame(text_type = .) %>%
+  mutate(text_type = str_extract(text_type, "^[a-z]+"))
+
+docvars(anno_trump_tkns) <- trump_doc_categories
+
+trump_all_dfm <- dfm(anno_trump_tkns)
+
+trump_tokens_clean <- anno_trump_tkns %>%
+  tokens_select("^.*jj$", selection = "keep", valuetype = "regex", case_insensitive = T) %>%
+  tokens() %>%
+  remove_pos()
+
+trump_dfm <- dfm(trump_tokens_clean)
+
+textstat_frequency(trump_dfm, n = 1000) |>
+  gt()
+
+```
+
+```{r, include=FALSE}
+### KEYNESS TABLES ####
+###Key: jj = adj.; vb = verb; nn = noun, prp = pronoun; vbp = ??? rb = ???, in/to = preposition
+obama_v_romney <- keyness_table(obama_all_dfm, romney_all_dfm) %>%
+  separate(col = Token, into = c("Token", "Tag"), sep = "_")
+
+obama_v_romney %>% filter(Tag == "vb") |>
+  head(10) |>
+  gt() |>
+  tab_header(
+    title = "Keyness Table",
+    subtitle = "Comparison of Obama and Romney"
+  ) |>
+  tab_footnote(footnote="Tokens with the highest keyness values for the obama debate verbs when compared to the romney debate verbs") |>
+  fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
+  fmt_number(columns = c('DP_Tar', 'DP_Ref'), decimals = 3) |>
+  fmt_number(columns = c('PV'), decimals = 5) |>
+  as_raw_html()
+
+harris_v_trump <- keyness_table(harris_all_dfm, trump_all_dfm) %>%
+  separate(col = Token, into = c("Token", "Tag"), sep = "_")
+
+harris_v_trump %>% filter(Tag == "vb") |>
+  head(10) |>
+  gt() |>
+  tab_header(
+    title = "Keyness Table",
+    subtitle = "Comparison of Harris and Trump"
+  ) |>
+  tab_footnote(footnote="Tokens with the highest keyness values for the harris debate verbs when compared to the trump debate verbs") |>
+  fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
+  fmt_number(columns = c('DP_Tar', 'DP_Ref'), decimals = 3) |>
+  fmt_number(columns = c('PV'), decimals = 5) |>
+  as_raw_html()
+
+harris_v_obama <- keyness_table(harris_all_dfm, obama_all_dfm) %>%
+  separate(col = Token, into = c("Token", "Tag"), sep = "_")
+
+harris_v_obama %>% filter(Tag == "vb") |>
+  head(10) |>
+  gt() |>
+  tab_header(
+    title = "Keyness Table",
+    subtitle = "Comparison of Harris and Obama"
+  ) |>
+  tab_footnote(footnote="Tokens with the highest keyness values for the harris debate verbs when compared to the obama debate verbs") |>
+  fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
+  fmt_number(columns = c('DP_Tar', 'DP_Ref'), decimals = 3) |>
+  fmt_number(columns = c('PV'), decimals = 5) |>
+  as_raw_html()
+
+romney_v_trump <- keyness_table(romney_all_dfm, trump_all_dfm) %>%
+  separate(col = Token, into = c("Token", "Tag"), sep = "_")
+
+romney_v_trump %>% filter(Tag == "vb") |>
+  head(10) |>
+  gt() |>
+  tab_header(
+    title = "Keyness Table",
+    subtitle = "Comparison of Romney and Trump"
+  ) |>
+  tab_footnote(footnote="Tokens with the highest keyness values for the romney debate verbs when compared to the trump debate verbs") |>
+  fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
+  fmt_number(columns = c('DP_Tar', 'DP_Ref'), decimals = 3) |>
+  fmt_number(columns = c('PV'), decimals = 5) |>
+  as_raw_html() 
+
+
+```
