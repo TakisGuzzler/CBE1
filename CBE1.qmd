@@ -32,7 +32,7 @@ This project conducts a sentiment analysis to compare the sentiment expressed by
 * Describe the data and include a summary table of the corpus.
 * Use the proper syntax to reference your tables (and figures); see the example at the end of this paragraph. <https://quarto.org/docs/authoring/cross-references.html>
 
-The data for this study consists of the first presidential debate transcripts from Obama vs. Romney (2012) and Harris vs. Trump (2020). These transcripts were obtained online and then divided based on who was speaking, with three groups identified for each debate: Democrat, Republican, and Moderator. 
+The data for this study consists of the first presidential debate transcripts from Obama vs. Romney (2012) and Harris vs. Trump (2024). These transcripts were obtained online and then divided based on who was speaking, with three groups identified for each debate: Democrat, Republican, and Moderator. For the 2024 debate there were two moderators which were grouped together in a single category. A python script was used to perform pre-processing on the data and divide it properly.
 
 ```{r, include=FALSE}
 library(udpipe)
@@ -131,6 +131,37 @@ rename(Token = feature, AF = frequency) %>%
 mutate(RF = AF/sum(AF)*100)
 ```
 
+```{r}
+#corpus summary
+
+total_obama_tokens <- sum(obama_freq$AF)
+total_trump_tokens <- sum(trump_freq$AF)
+total_romney_tokens <- sum(romney_freq$AF)
+total_harris_tokens <- sum(harris_freq$AF)
+total_obama_mod_tokens <- sum(obama_mod_freq$AF)
+total_harris_mod_tokens <- sum(harris_mod_freq$AF)
+
+all_tokens <- tibble::tibble(
+  Candidate = c("Obama", "Romney", "Harris", "Trump", "Obama Moderator", "Harris Moderators"),
+  Tokens = c(total_obama_tokens, total_romney_tokens, total_trump_tokens, total_harris_tokens, total_obama_mod_tokens, total_harris_mod_tokens)
+)
+
+debate_tokens <- tibble::tibble(
+  Candidate = c("2012", "2024"),
+  Tokens = c(total_obama_tokens + total_romney_tokens + total_obama_mod_tokens, total_trump_tokens + total_harris_tokens + total_harris_mod_tokens)
+)
+
+all_tokens %>%
+  knitr::kable(col.names = c("Debate Participant", "Total Tokens"), 
+               caption = "Number of Tokens by Speaker")
+
+debate_tokens %>%
+  knitr::kable(col.names = c("Year", "Total Tokens"), 
+               caption = "Number of Tokens Spoken by Year")
+
+```
+
+The above tables summarize the distribution across parties and years. The words spoken by moderators nearly doubled between the two debates, which is partially due to the fact that there were two moderators instead of one. Trump spoke the least out of the four presidential candidates and Romney spoke the most. The 2024 debate was slightly longer, and overall the Republicans talked more than the Democrats.
 
 
 ```{r}
@@ -517,7 +548,9 @@ From the Trump and Romney discussion, we saw similar pattern of a lack of overla
 * The coffee-break experiments are meant to be exploratory and provisional. For these reports, you can suggest what seemed to work or what didn't. If things didn't go according to plan, you might posit an explanation as to why you think it didn't work out as you envisioned.
 * If you were to elaborate this into a more fully realized analysis, what might you do next?
 
-Most interesting is the difference between the four career politician candidates - Obama, Romney, and Harris - and the non career politician candidate - Trump. Trump would appear far more willing to use negative language. Beyond this, it appears that the sentiment of the candidates language is more informed by the time period than it is by their party. Even though Harris has an overall more positive sentiment when compared to Trump, the two are more negative than their part predecessors - Romney and Obama. 
+Most interesting is the difference between the four career politician candidates - Obama, Romney, and Harris - and the non career politician candidate - Trump. Trump would appear far more willing to use negative language. Beyond this, it appears that the sentiment of the candidates language is more informed by the time period than it is by their party. Even though Harris has an overall more positive sentiment when compared to Trump, the two are more negative than their part predecessors - Romney and Obama.
+
+The validity of our t-test is unclear because of the source data's distribution. Using such a small sample size means that we cannot determine if it is normally distributed. Although it was found that the emotional valence was significantly more negative, the true meaning of this significance cannot be validated from the data in this report.
 
 
 # Acknowledgments {.appendix}
