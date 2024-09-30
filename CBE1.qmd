@@ -171,6 +171,17 @@ The overall sentiment analysis of the presidential debate transcripts produced t
 * Cite sources where appropriate. For example, if you're carrying out a Biber-esqu multi-dimensional analysis, cite a couple of similar studies that use this method. Citations can signal both the validity of the methods and allow you to be very efficient in your descriptions. For including citations, see the examples at the end of the next two paragraphs. <https://quarto.org/docs/authoring/citations.html>
 
 
+First, we compare the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time. We used the sentimentr and text libraries in R for the analysis, cleaning the text data and segmenting it into sentences to calculate sentiment scores.This method was chosen because it effectively captures the shifts in sentiment across different segments of the debates, showing how sentiment can vary not only between candidates but also across time during each debate. It also makes easier to identify trends and compare emotional responses from the Democrats, Republicans, and moderators. 
+
+
+# Results
+
+* Be sure your visualizations are well-designed and properly captioned. Note that the toy example in [@fig-result] is **not good!**
+* Also, be sure to follow the appropriate conventions for reporting your statistical results as outlined in Brezina.
+* Be strategic and selective about what results you choose to show. Even in your final project (which is much more complete and elaborated than either of the coffee-break experiments) you are not going to show **all of your work**. You must decide what is most interesting/explanatory.
+
+
+
 ```{r, fig.cap="Emotional Valence vs. Time for the 2012 Debate Participants"}
 par(mfrow = c(1, 3))
 
@@ -255,12 +266,7 @@ plot(harris_mod_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valen
 
 ```
 
-First, we compare the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time. We used the sentimentr and text libraries in R for the analysis, cleaning the text data and segmenting it into sentences to calculate sentiment scores. 
-
-This method was chosen because it effectively captures the shifts in sentiment across different segments of the debates, showing how sentiment can vary not only between candidates but also across time during each debate. It also makes easier to identify trends and compare emotional responses from the Democrats, Republicans, and moderators. 
-
-
-In 2012, Obama, Romney, and the moderator all exhibited fluctuating emotional valences. In contrast, the 2024 debate displayed Trump experiencing a dramatic initial drop in emotional valence, followed by a rise, while Harris reflected similar fluctuations, though less pronounced. The moderators in 2024 showed more dramatic fluctuations than Trump. Notably, all participants in the 2024 debate had similar trends in emotional valence. However, in the 2012 debate, the candidates showed similar patterns that were almost opposite to that of the moderator.
+First, we compare the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time. In 2012, Obama, Romney, and the moderator all exhibited fluctuating emotional valences. In contrast, the 2024 debate displayed Trump experiencing a dramatic initial drop in emotional valence, followed by a rise, while Harris reflected similar fluctuations, though less pronounced. The moderators in 2024 showed more dramatic fluctuations than Trump. Notably, all participants in the 2024 debate had similar trends in emotional valence. However, in the 2012 debate, the candidates showed similar patterns that were almost opposite to that of the moderator.
 
 ```{r}
 all_dcts <- bind_rows(
@@ -305,25 +311,6 @@ emotional_valence_2024 <- c(0.0472646, -0.1431562, -0.3618718)
 wilcox_test_result <- wilcox.test(emotional_valence_2012, emotional_valence_2024)
 print(wilcox_test_result)
 ```
-# Results
-
-```{r}
-#| label: fig-result
-#| fig-cap: "Here's a figure"
-
-ggplot2::ggplot(mtcars, ggplot2::aes(x=hp, y=mpg, color=as.factor(cyl))) +
-    ggplot2::geom_point(size=3) +
-    ggplot2::scale_color_discrete(name="Number of\ncylinders")
-
-```
-
-
-* Be sure your visualizations are well-designed and properly captioned. Note that the toy example in [@fig-result] is **not good!**
-* Also, be sure to follow the appropriate conventions for reporting your statistical results as outlined in Brezina.
-* Be strategic and selective about what results you choose to show. Even in your final project (which is much more complete and elaborated than either of the coffee-break experiments) you are not going to show **all of your work**. You must decide what is most interesting/explanatory.
-
-
-Fames commodo torquent fusce; platea pharetra ultricies torquent fames. Sollicitudin nulla porta luctus vehicula ad. Rhoncus sodales conubia fermentum mus sem magnis lobortis ex. Parturient auctor tempus feugiat ante lobortis lacus egestas rutrum ut. Donec fringilla semper rhoncus; molestie risus elementum. Atortor eu convallis faucibus scelerisque fusce. Et dolor aenean praesent montes mi adipiscing nascetur viverra maximus. Accumsan pharetra eu; pretium laoreet platea maximus per nisl. Rhoncus ante volutpat senectus vulputate hac neque rhoncus.
 
 ## A subsection
 
