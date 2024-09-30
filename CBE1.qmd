@@ -445,7 +445,8 @@ harris_v_obama |>
   ) |>
   fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
   fmt_number(columns = c('DP_Tar'), decimals = 3) |>
-  fmt_number(columns = c('PV'), decimals = 5)
+  fmt_number(columns = c('PV'), decimals = 5) |>
+  as_raw_html()
 ```
 
 ```{r}
