@@ -358,16 +358,6 @@ docvars(anno_obama_tkns) <- obama_doc_categories
 
 obama_all_dfm <- dfm(anno_obama_tkns)
 
-## sentiment token linking using the obama dfm ##
-# tokens_df <- data.frame(word = unlist(obama_tokens_clean))
-# # Load sentiment lexicon (e.g., Bing lexicon)
-# sentiment_lexicon <- get_sentiments("bing")
-# # Join DFM words with sentiment scores
-# sentiment_scores <- tokens_df %>%
-#   inner_join(sentiment_lexicon, by = "word")
-# 
-# sentiment_scores
-
 ```
 
 ```{r, include=FALSE}
@@ -426,6 +416,8 @@ trump_all_dfm <- dfm(anno_trump_tkns)
 
 ```
 
+We then decided to look at the keyness tables for the Democratic and Republican candidates to determine what words might have been influential in their overal sentiments. We found that adjectives where the most statistically significant, with the most frequent verbs, nouns, and other parts of speech being far more generic and neutral.
+
 ```{r}
 ### KEYNESS TABLES ####
 ###Key: jj = adj.; vb = verb; nn = noun, prp = pronoun; vbp = ??? rb = ???, in/to = preposition
@@ -433,7 +425,6 @@ harris_v_obama <- keyness_table(harris_all_dfm, obama_all_dfm) %>%
   separate(col = Token, into = c("Token", "Tag"), sep = "_") %>%
   filter(Tag == "jj") %>%
   select(-Tag) %>%
-  select(-AF_Ref) %>%
   select(-DP_Ref)
 
 harris_v_obama |>
@@ -455,7 +446,6 @@ obama_v_harris <- keyness_table(obama_all_dfm, harris_all_dfm) %>%
   separate(col = Token, into = c("Token", "Tag"), sep = "_") %>%
   filter(Tag == "jj") %>%
   select(-Tag) %>%
-  select(-AF_Ref) %>%
   select(-DP_Ref)
 
 
@@ -472,6 +462,9 @@ obama_v_harris |>
   as_raw_html()
 ```
 
+Evidently, most of the most frequent adjectives for both Obama and Harris are neutral. More than that, there appears to be very little overlap between the two sub-corpus in terms of average frequency.
+
+
 ```{r}
 ### KEYNESS TABLES ####
 ###Key: jj = adj.; vb = verb; nn = noun, prp = pronoun; vbp = ??? rb = ???, in/to = preposition
@@ -480,7 +473,6 @@ romney_v_trump <- keyness_table(romney_all_dfm, trump_all_dfm) %>%
   separate(col = Token, into = c("Token", "Tag"), sep = "_") %>%
   filter(Tag == "jj") %>%
   select(-Tag) %>%
-  select(-AF_Ref) %>%
   select(-DP_Ref)
 
 romney_v_trump |>
@@ -502,7 +494,6 @@ trump_v_romney <- keyness_table(trump_all_dfm, romney_all_dfm) %>%
   separate(col = Token, into = c("Token", "Tag"), sep = "_") %>%
   filter(Tag == "jj") %>%
   select(-Tag) %>%
-  select(-AF_Ref) %>%
   select(-DP_Ref)
 
 trump_v_romney |>
@@ -518,7 +509,7 @@ trump_v_romney |>
   as_raw_html() 
 ```
 
-
+From the Trump and Romney discussion, we saw similar pattern of a lack of overlap in high frequency words. However, interestingly the Romney sub corpus more frequently has far more words with a positive sentiment, such as *strong*, *right*, and *peaceful* where many of the most frequent words in the Trump sub corpus have a negative sentiment, such as *bad*, *weak*, *horrible*, *guilty*, and *afraid*.
 
 # Discussion
 
@@ -526,9 +517,13 @@ trump_v_romney |>
 * The coffee-break experiments are meant to be exploratory and provisional. For these reports, you can suggest what seemed to work or what didn't. If things didn't go according to plan, you might posit an explanation as to why you think it didn't work out as you envisioned.
 * If you were to elaborate this into a more fully realized analysis, what might you do next?
 
+Most interesting is the difference between the four career politician candidates - Obama, Romney, and Harris - and the non career politician candidate - Trump. Trump would appear far more willing to use negative language. Beyond this, it appears that the sentiment of the candidates language is more informed by the time period than it is by their party. Even though Harris has an overall more positive sentiment when compared to Trump, the two are more negative than their part predecessors - Romney and Obama. 
+
 
 # Acknowledgments {.appendix}
 
 If you used Generative AI to assist you in the writing of the report, describe how you used the LLM as part of your writing process here. For example, did you use it help generate a first draft? Or perhaps to revise your prose as you finalized your report? Finally, evaluate its usefulness. Did you find it helpful? If you didn't use an LLM as part of your process, simply delete this secton.
+
+ChatGPT was used to help generate the first draft. This primarily took the form of suplementing our lack of knowledge of different forms of sentiment analysis and certain statistical concepts. We asked the LLM about differnet forms of sentiment analysis and what libraries should be used to preforms said analysis in R. We also used the LLM to develop the code used for initially parsing the text into their seperate text files in python. When attempting to fit the Keyness tables on the pdf, I made many queries to the LLM about my problem. In this regard, the LLM was extremely unhepful as none of its suggestions fixed the problem and they ultimetly did not make it to the final product. THe LLM was also used to generate a certain amount of regex lines since I am unfamiliar with the necessary syntax. This ultimately also did not make it to the final report since the analysis in which it was used was deemed unnecessary. Ultimately, the LLM was far more useful in sumplimenting our knowledge of sentiment analysis than it was in our knowledge/implimentation of the R code.
 
 # Works Cited
