@@ -18,16 +18,12 @@ execute:
 
 # Introduction
 
-* What (very, very briefly) is the context? In other words, what's the topic/territory?
-* What is your research question?
-* What drew you to this question? Why is it interesting/important?
-
 <!-- - Comparison of presidential debates and how they have changed over the past decade -->
 <!-- - Changes over time for parties, incumbents, moderators, etc. -->
 <!-- - Types of words used, amount of words spoken, other differences -->
 
 
-This project conducts a sentiment analysis to compare the sentiment expressed by Democrats, Republicans, and moderators in presidential debates, focusing on how it has changed over time. We analyze debates from 2012 and 2024 to explore shifts in tone and emotional language across political parties and debate roles. This question is interesting as it reveals how changes in debate sentiment reflect shifts in the way politicians communicate, which is especially relevant with the upcoming presidential election and the recent debates. 
+This project conducts a sentiment analysis to compare the sentiment expressed by Democrats, Republicans, and moderators in presidential debates, focusing on how it has changed over time and how it might differ between parties. We analyze debates from 2012 and 2024 to explore shifts in tone and emotional language across political parties and debate roles. This question is interesting as it reveals how changes in debate sentiment reflect shifts in the way politicians communicate and how the different parties may present themselves and then be interpreted by the public through their words, which is especially relevant with the upcoming presidential election and the recent debates.
 
 # Data
 
