@@ -262,6 +262,49 @@ This method was chosen because it effectively captures the shifts in sentiment a
 
 In 2012, Obama, Romney, and the moderator all exhibited fluctuating emotional valences. In contrast, the 2024 debate displayed Trump experiencing a dramatic initial drop in emotional valence, followed by a rise, while Harris reflected similar fluctuations, though less pronounced. The moderators in 2024 showed more dramatic fluctuations than Trump. Notably, all participants in the 2024 debate had similar trends in emotional valence. However, in the 2012 debate, the candidates showed similar patterns that were almost opposite to that of the moderator.
 
+```{r}
+all_dcts <- bind_rows(
+  mutate(obama_dct, participant = "Obama"),
+  mutate(romney_dct, participant = "Romney"),
+  mutate(trump_dct, participant = "Trump"),
+  mutate(harris_dct, participant = "Harris"),
+  mutate(obama_mod_dct, participant = "2012 Moderator"),
+  mutate(harris_mod_dct, participant = "2024 Moderator")
+)
+
+average_valence <- all_dcts %>%
+  group_by(participant) %>%
+  summarise(average_valence = mean(dct, na.rm = TRUE))
+
+average_valence %>%
+  kable(caption = "Average Emotional Valence by Participant")
+```
+
+We also found the average emotional valence values for each participant in Table 2. All presidential candidates had a slightly negative average emotional valence value, though Trump seemed to be the most negative. The moderators were slightly more positive in that regard. 
+
+
+```{r}
+all_sentiments <- data.frame(
+  year = c(rep("2012", nrow(obama_dct)), rep("2012", nrow(romney_dct)), rep("2012", nrow(obama_mod_dct)),
+            rep("2024", nrow(trump_dct)), rep("2024", nrow(harris_dct)), rep("2024", nrow(harris_mod_dct))),
+  emotional_valence = c(obama_dct$dct, romney_dct$dct, obama_mod_dct$dct,
+                        trump_dct$dct, harris_dct$dct, harris_mod_dct$dct)
+)
+
+t_test_result <- t.test(emotional_valence ~ year, data = all_sentiments)
+```
+
+We also conducted a Welch Two Sample t-test to compare the emotional valence of participants in the 2012 and 2024 debates. We found a statistically significant difference (t = 2.2763, p = 0.02319), testing at a level $\alpha = 0.05$, which indicates that the emotional valence of participants in 2024 was significantly more negative (mean = -0.1526) compared to those in 2012 (mean = -0.0392), with a 95% confidence interval for the true difference in means ranging from 0.0156 to 0.2113.
+
+<!-- I'm not sure about the validity of this test since we don't know if the data is normally distributed ****** -->
+
+```{r}
+#also not sure about this test since the data is not necessarily symmetric
+emotional_valence_2012 <- c(0.0584797, -0.0117412,	-0.1641919)  
+emotional_valence_2024 <- c(0.0472646, -0.1431562, -0.3618718)  
+wilcox_test_result <- wilcox.test(emotional_valence_2012, emotional_valence_2024)
+print(wilcox_test_result)
+```
 # Results
 
 ```{r}
