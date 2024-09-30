@@ -18,19 +18,9 @@ execute:
 
 # Introduction
 
-<!-- - Comparison of presidential debates and how they have changed over the past decade -->
-<!-- - Changes over time for parties, incumbents, moderators, etc. -->
-<!-- - Types of words used, amount of words spoken, other differences -->
-
-
 This project conducts a sentiment analysis to compare the sentiment expressed by Democrats, Republicans, and moderators in presidential debates, focusing on how it has changed over time and how it might differ between parties. We analyze debates from 2012 and 2024 to explore shifts in tone and emotional language across political parties and debate roles. This question is interesting as it reveals how changes in debate sentiment reflect shifts in the way politicians communicate and how the different parties may present themselves and then be interpreted by the public through their words, which is especially relevant with the upcoming presidential election and the recent debates. 
 
 # Data
-
-* What are data you're using?
-* Where do they come from? How were they collected/compiled?
-* Describe the data and include a summary table of the corpus.
-* Use the proper syntax to reference your tables (and figures); see the example at the end of this paragraph. <https://quarto.org/docs/authoring/cross-references.html>
 
 The data for this study consists of the first presidential debate transcripts from Obama vs. Romney (2012) and Harris vs. Trump (2024). These transcripts were obtained online and then divided based on who was speaking, with three groups identified for each debate: Democrat, Republican, and Moderator. For the 2024 debate there were two moderators which were grouped together in a single category. A python script was used to perform pre-processing on the data and divide it properly.
 
@@ -163,7 +153,6 @@ debate_tokens %>%
 
 The above tables summarize the distribution across parties and years. The words spoken by moderators nearly doubled between the two debates, which is partially due to the fact that there were two moderators instead of one. Trump spoke the least out of the four presidential candidates and Romney spoke the most. The 2024 debate was slightly longer, and overall the Republicans talked more than the Democrats.
 
-
 ```{r}
 
 #overall sentiments of the texts
@@ -206,23 +195,12 @@ The overall sentiment analysis of the presidential debate transcripts produced t
 
 # Methods
 
-* Efficiently describe your methods.
-* Explain why you chose these methods. You have many options (from this course and elsewhere). What is the explanatory power of what you're doing here?
-* Note that this section and the previous one should work together. You are likely to justify your selection of the data in the Data section and what you're doing with those data here.
-* Cite sources where appropriate. For example, if you're carrying out a Biber-esqu multi-dimensional analysis, cite a couple of similar studies that use this method. Citations can signal both the validity of the methods and allow you to be very efficient in your descriptions. For including citations, see the examples at the end of the next two paragraphs. <https://quarto.org/docs/authoring/citations.html>
-
-
 First, we compare the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time. We used the sentimentr and text libraries in R for the analysis, cleaning the text data and segmenting it into sentences to calculate sentiment scores.This method was chosen because it effectively captures the shifts in sentiment across different segments of the debates, showing how sentiment can vary not only between candidates but also across time during each debate. It also makes easier to identify trends and compare emotional responses from the Democrats, Republicans, and moderators. 
-
 
 We further categorized our corpuses by part-of-speech - focusing on adjectives since they have the greatest crossover with sentiment. From this, we preformed keyness table analysis to identify differences within parties and across years and frequency and dispersion analysis to identify the most common adjectives for each candidate. We included the sentiment denomination of these words according to the **ENTER LEXICON NAME HERE** lexicon to determine if a candidate has frequent usage of neutral, positive, or negative language. This methods was chosen because it allows us to view the words within the corpuses and draw more specified conclusions across time.
 
 
 # Results
-
-* Be sure your visualizations are well-designed and properly captioned. Note that the toy example in [@fig-result] is **not good!**
-* Also, be sure to follow the appropriate conventions for reporting your statistical results as outlined in Brezina.
-* Be strategic and selective about what results you choose to show. Even in your final project (which is much more complete and elaborated than either of the coffee-break experiments) you are not going to show **all of your work**. You must decide what is most interesting/explanatory.
 
 ## Emotional Valence
 
@@ -495,7 +473,6 @@ obama_v_harris |>
 
 Evidently, most of the most frequent adjectives for both Obama and Harris are neutral. More than that, there appears to be very little overlap between the two sub-corpus in terms of average frequency.
 
-
 ```{r}
 ### KEYNESS TABLES ####
 ###Key: jj = adj.; vb = verb; nn = noun, prp = pronoun; vbp = ??? rb = ???, in/to = preposition
@@ -544,13 +521,11 @@ From the Trump and Romney discussion, we saw similar pattern of a lack of overla
 
 # Discussion
 
-* What conclusions might you draw from your findings?
-* The coffee-break experiments are meant to be exploratory and provisional. For these reports, you can suggest what seemed to work or what didn't. If things didn't go according to plan, you might posit an explanation as to why you think it didn't work out as you envisioned.
-* If you were to elaborate this into a more fully realized analysis, what might you do next?
-
 Most interesting is the difference between the four career politician candidates - Obama, Romney, and Harris - and the non career politician candidate - Trump. Trump would appear far more willing to use negative language. Beyond this, it appears that the sentiment of the candidates language is more informed by the time period than it is by their party. Even though Harris has an overall more positive sentiment when compared to Trump, the two are more negative than their part predecessors - Romney and Obama.
 
 The validity of our t-test is unclear because of the source data's distribution. Using such a small sample size means that we cannot determine if it is normally distributed. Although it was found that the emotional valence was significantly more negative, the true meaning of this significance cannot be validated from the data in this report.
+
+A future analysis would involve drawing on the transcripts from additional presidential debates. This would allow us to better see trends over time since we would have more than two data points. One example of deeper analysis would be a sentiment and valence comparison across incumbents. We could also look at the use of specific tokens and which topics have remained relevent for many years.
 
 
 # Acknowledgments {.appendix}
@@ -560,3 +535,9 @@ If you used Generative AI to assist you in the writing of the report, describe h
 ChatGPT was used to help generate the first draft. This primarily took the form of suplementing our lack of knowledge of different forms of sentiment analysis and certain statistical concepts. We asked the LLM about differnet forms of sentiment analysis and what libraries should be used to preforms said analysis in R. We also used the LLM to develop the code used for initially parsing the text into their seperate text files in python. When attempting to fit the Keyness tables on the pdf, I made many queries to the LLM about my problem. In this regard, the LLM was extremely unhepful as none of its suggestions fixed the problem and they ultimetly did not make it to the final product. THe LLM was also used to generate a certain amount of regex lines since I am unfamiliar with the necessary syntax. This ultimately also did not make it to the final report since the analysis in which it was used was deemed unnecessary. Ultimately, the LLM was far more useful in sumplimenting our knowledge of sentiment analysis than it was in our knowledge/implimentation of the R code.
 
 # Works Cited
+
+1. Brown, D. W. (n.d.). textstat documentation. https://browndw.github.io/textstat_docs/
+
+2. Commission on Presidential Debates. (n.d.). Debate transcripts. Debates.org. https://www.debates.org/voter-education/debate-transcripts/
+
+3. Flynn, L. (2019, June 18). Comparing sentiment analysis dictionaries in R. Medium. https://medium.com/@laurenflynn1211/comparing-sentiment-analysis-dictionaries-in-r-c695fca64326
