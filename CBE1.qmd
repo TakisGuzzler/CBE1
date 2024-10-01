@@ -536,7 +536,7 @@ trump_v_romney |>
               table.align = "left")
 ```
 
-```{r, include=False}
+```{r, include=FALSE}
 #sentiments
 library(tidytext)
 library(dplyr)
