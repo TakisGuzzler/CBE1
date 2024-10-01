@@ -198,6 +198,8 @@ The overall sentiment analysis of the presidential debate transcripts produced t
 
 First, we compare the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time. We used the sentimentr and text libraries in R for the analysis, cleaning the text data and segmenting it into sentences to calculate sentiment scores.This method was chosen because it effectively captures the shifts in sentiment across different segments of the debates, showing how sentiment can vary not only between candidates but also across time during each debate. It also makes it easier to identify trends and compare emotional responses from the Democrats, Republicans, and moderators.
 
+We also chose to use a Welch Two Sample t-test because it accounts for unequal variances between groups and doesn't require equal sample sizes. This method tests for whether the average emotional valences from the 2012 and 2024 debates are significantly different. Thus, the Welch test can help us draw conclusions about changes in emotional tone across the two years and reveal trends or shifts in how debate participants spoke.
+
 We further categorized our corpuses by part-of-speech - focusing on adjectives since they have the greatest crossover with sentiment. From this, we performed keyness table analysis to identify differences within parties and across years and frequency and dispersion analysis to identify the most common adjectives for each candidate. We included the sentiment denomination of these words according to the "bing", "afinn", "loughran", "nrc" lexicons to determine if a candidate has frequent usage of neutral, positive, or negative language. This method was chosen because it allows us to view the words within the corpuses and draw more specific conclusions across time.
 
 
@@ -324,7 +326,7 @@ t_test_result <- t.test(emotional_valence ~ year, data = all_sentiments)
 ```
 
 ## Welch Two Sample t-test
-We also conducted a Welch Two Sample t-test to compare the emotional valence of participants in the 2012 and 2024 debates. We found a statistically significant difference (t = 2.2763, p = 0.02319), testing at a level $\alpha = 0.05$, which indicates that the emotional valence of participants in 2024 was significantly more negative (mean = -0.1526) compared to those in 2012 (mean = -0.0392), with a 95% confidence interval for the true difference in means ranging from 0.0156 to 0.2113.
+We also conducted a Welch Two Sample t-test to compare the emotional valence of participants in the 2012 and 2024 debates. We found a statistically significant difference (t = 2.2763, p = 0.02319), testing at a level $\alpha = 0.05$, which indicates that the emotional valence of participants in 2024 was significantly more negative (mean = -0.1526) compared to those in 2012 (mean = -0.0392), with a 95% confidence interval for the true difference in means ranging from 0.0156 to 0.2113. Thus, we can reject the null hypothesis that the two debates have equal means (average emotional valences).
 
 
 ## Keyness and Frequency Analysis for Adjectives
@@ -571,4 +573,3 @@ ChatGPT was used to help generate the first draft. This primarily took the form 
 2. Commission on Presidential Debates. (n.d.). Debate transcripts. Debates.org. https://www.debates.org/voter-education/debate-transcripts/
 
 3. Flynn, L. (2019, June 18). Comparing sentiment analysis dictionaries in R. Medium. https://medium.com/@laurenflynn1211/comparing-sentiment-analysis-dictionaries-in-r-c695fca64326
-
