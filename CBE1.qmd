@@ -26,7 +26,6 @@ The data for this study consists of the first presidential debate transcripts fr
 
 ```{r, include=FALSE}
 library(udpipe)
-source("../R/helper_functions.R")
 library(quanteda)
 library(quanteda.textstats)
 library(tidyverse)
@@ -34,10 +33,11 @@ library(sentimentr)
 library(knitr)
 library(gt)
 library(syuzhet)
-library(tidyverse)
+library(tidytext)
 library(dplyr)
 source("../R/helper_functions.R")
 source("../R/keyness_functions.R")
+
 ```
 ```{r, include=FALSE}
 #processing all 6 texts
@@ -204,7 +204,7 @@ We further categorized our corpuses by part-of-speech - focusing on adjectives s
 
 ## Emotional Valence
 
-```{r, fig.cap="Emotional Valence vs. Time for the 2012 Debate Participants", out.height = "40%"}
+```{r, fig.cap="Emotional Valence vs. Time for the 2012 Debate Participants", out.height = "30%"}
 par(mfrow = c(1, 3))
 
 
@@ -248,7 +248,7 @@ plot(obama_mod_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valenc
 ```
 
 
-```{r fig.cap="Emotional Valence vs. Time for the 2024 Debate Participants", out.height = "40%"}
+```{r fig.cap="Emotional Valence vs. Time for the 2024 Debate Participants", out.height = "30%"}
 par(mfrow = c(1, 3))
 trump <- str_squish(trump_txt)
 trump_sentences <- get_sentences(trump)
@@ -446,7 +446,12 @@ harris_v_obama |>
   fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
   fmt_number(columns = c('DP_Tar'), decimals = 3) |>
   fmt_number(columns = c('PV'), decimals = 5) |>
-  as_raw_html()
+  tab_options(data_row.padding = px(2), 
+              column_labels.padding = px(2), 
+              heading.padding = px(2),
+              heading.title.font.size = "small",
+              heading.subtitle.font.size = "small",
+              table.font.size = "small")
 ```
 
 ```{r}
@@ -468,7 +473,12 @@ obama_v_harris |>
   fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
   fmt_number(columns = c('DP_Tar'), decimals = 3) |>
   fmt_number(columns = c('PV'), decimals = 5) |>
-  as_raw_html()
+  tab_options(data_row.padding = px(2), 
+              column_labels.padding = px(2), 
+              heading.padding = px(2),
+              heading.title.font.size = "small",
+              heading.subtitle.font.size = "small",
+              table.font.size = "small")
 ```
 
 Evidently, most of the most frequent adjectives for both Obama and Harris are neutral. More than that, there appears to be very little overlap between the two sub-corpus in terms of average frequency.
@@ -493,7 +503,12 @@ romney_v_trump |>
   fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
   fmt_number(columns = c('DP_Tar'), decimals = 3) |>
   fmt_number(columns = c('PV'), decimals = 5) |>
-  as_raw_html() 
+  tab_options(data_row.padding = px(2), 
+              column_labels.padding = px(2), 
+              heading.padding = px(2),
+              heading.title.font.size = "small",
+              heading.subtitle.font.size = "small",
+              table.font.size = "small")
 ```
 
 ```{r}
@@ -514,8 +529,21 @@ trump_v_romney |>
   fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
   fmt_number(columns = c('DP_Tar'), decimals = 3) |>
   fmt_number(columns = c('PV'), decimals = 5) |>
-  as_raw_html() 
+  tab_options(data_row.padding = px(2), 
+              column_labels.padding = px(2), 
+              heading.padding = px(2),
+              heading.title.font.size = "small",
+              heading.subtitle.font.size = "small",
+              table.font.size = "small")
 ```
+
+```{r}
+#sentiments
+library(tidytext)
+library(dplyr)
+sentiment_bing = get_sentiments(lexicon = c("bing", "afinn", "loughran", "nrc"))
+```
+
 
 From the Trump and Romney discussion, we saw similar pattern of a lack of overlap in high frequency words. However, interestingly the Romney sub corpus more frequently has far more words with a positive sentiment, such as *strong*, *right*, and *peaceful* where many of the most frequent words in the Trump sub corpus have a negative sentiment, such as *bad*, *weak*, *horrible*, *guilty*, and *afraid*.
 
