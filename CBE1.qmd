@@ -476,7 +476,7 @@ obama_v_harris |>
               table.align = "left")
 ```
 
-Evidently, most of the most frequent adjectives for both Obama and Harris are neutral. More than that, there appears to be very little overlap between the two sub-corpus in terms of average frequency.
+Evidently, most of the most frequent adjectives for both Obama and Harris are neutral. The Harris data has the negative adjectives *tired* and *weak* as the 6th and 7th most frequent adjectives and the Obama data has the positive adjectives *safe*, *effective*, and *glad* as the 3rd, 8th, and 9th most frequent words. More than that, there appears to be very little overlap between the two sub-corpus in terms of average frequency.
 
 \newpage
 
@@ -536,19 +536,23 @@ trump_v_romney |>
               table.align = "left")
 ```
 
-```{r}
+```{r, include=False}
 #sentiments
 library(tidytext)
 library(dplyr)
-sentiment_bing = get_sentiments(lexicon = c("bing", "afinn", "loughran", "nrc"))
+sentiment_dict = get_sentiments(lexicon = c("bing", "afinn", "loughran", "nrc"))
+
+word <- sentiment_dict %>%
+  filter(word == "effective")
+
 ```
 
 
-From the Trump and Romney discussion, we saw similar pattern of a lack of overlap in high frequency words. However, interestingly the Romney sub corpus more frequently has far more words with a positive sentiment, such as *strong*, *right*, and *peaceful* where many of the most frequent words in the Trump sub corpus have a negative sentiment, such as *bad*, *weak*, *horrible*, *guilty*, and *afraid*.
+From the Trump and Romney discussion, we saw similar pattern of a lack of overlap in high frequency words. Interestingly the Romney data's most frequent adjectives have more positive sentiment than negative sentiment; the 4th, 7th, and 10th most frequent adjectives are *strong*, *right*, and *peaceful*. Comparatively, the Trump data's 2nd, 4th, 6th, 8th, and 10th most frequent adjectives are *bad*, *weak*, *horrible*, *guilty*, and *afraid*, which all carry a negative sentiment.
 
 # Discussion
 
-Most interesting is the difference between the four career politician candidates - Obama, Romney, and Harris - and the non career politician candidate - Trump. Trump would appear far more willing to use negative language. Beyond this, it appears that the sentiment of the candidates language is more informed by the time period than it is by their party. Even though Harris has an overall more positive sentiment when compared to Trump, the two are more negative than their part predecessors - Romney and Obama.
+Most interesting is the difference between the three career politician candidates - Obama, Romney, and Harris - and the non career politician candidate - Trump. Trump appears far more willing to use negative language. Beyond this difference, the sentiment of the candidates language is more so informed by the time period than it is by their party. This could be due to the changing view of politics and politicians by the average person. Even though Harris has an overall more positive sentiment when compared to Trump, the two are more negative than their party predecessors - Romney and Obama.
 
 The validity of our t-test is unclear because of the source data's distribution. Using such a small sample size means that we cannot determine if it is normally distributed. Although it was found that the emotional valence was significantly more negative, the true meaning of this significance cannot be validated from the data in this report.
 
@@ -558,7 +562,7 @@ A future analysis would involve drawing on the transcripts from additional presi
 # Acknowledgments {.appendix}
 
 
-ChatGPT was used to help generate the first draft. This primarily took the form of supplementing our lack of knowledge of different forms of sentiment analysis and certain statistical concepts. We asked the LLM about different forms of sentiment analysis and what libraries should be used to preforms said analysis in R. We also used the LLM to develop the code used for initially parsing the text into their separate text files in python. When attempting to fit the Keyness tables on the pdf, I made many queries to the LLM about my problem. In this regard, the LLM was extremely unhelpful as none of its suggestions fixed the problem and they ultimately did not make it to the final product. The LLM was also used to generate a certain amount of regex lines since I am unfamiliar with the necessary syntax. This ultimately also did not make it to the final report since the analysis in which it was used was deemed unnecessary. Ultimately, the LLM was far more useful in supplementing our knowledge of sentiment analysis than it was in our knowledge/implementation of the R code.
+ChatGPT was used to help generate the first draft. This primarily took the form of supplementing our lack of knowledge of different forms of sentiment analysis and certain statistical concepts. We asked the LLM about different forms of sentiment analysis and what libraries should be used to preforms said analysis in R. We also used the LLM to develop the code used for initially parsing the text into their separate text files in python. When attempting to fit the Keyness tables on the pdf, I made many queries to the LLM about my problem. In this regard, the LLM was extremely unhelpful as none of its suggestions fixed the problem and they ultimately did not make it to the final product. The LLM was also used to generate a certain amount of regex expressions since I am unfamiliar with the necessary syntax. This ultimately also did not make it to the final report since the analysis in which it was used was deemed unnecessary. Ultimately, the LLM was far more useful in supplementing our knowledge of sentiment analysis than it was in our knowledge/implementation of the R code.
 
 # Works Cited
 
