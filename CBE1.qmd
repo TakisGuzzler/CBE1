@@ -552,7 +552,7 @@ Most interesting is the difference between the four career politician candidates
 
 The validity of our t-test is unclear because of the source data's distribution. Using such a small sample size means that we cannot determine if it is normally distributed. Although it was found that the emotional valence was significantly more negative, the true meaning of this significance cannot be validated from the data in this report.
 
-A future analysis would involve drawing on the transcripts from additional presidential debates. This would allow us to better see trends over time since we would have more than two data points. One example of deeper analysis would be a sentiment and valence comparison across incumbents. We could also look at the use of specific tokens and which topics have remained relevent for many years.
+A future analysis would involve drawing on the transcripts from additional presidential debates. This would allow us to better see trends over time since we would have more than two data points. One example of deeper analysis would be a sentiment and valence comparison across incumbents as a category rather than just parties or years. We could also interpret the tokens in both the context of the original document and the context of the time period - drawing on the fact that many of the tokens in the corpus are informed by the happenings of the world.
 
 
 # Acknowledgments {.appendix}
