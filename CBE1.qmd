@@ -16,6 +16,7 @@ execute:
   echo: false
 ---
 
+\newpage
 # Introduction
 
 This project conducts a sentiment analysis to compare the sentiment expressed by Democrats, Republicans, and moderators in presidential debates, focusing on how it has changed over time and how it might differ between parties. We analyze debates from 2012 and 2024 to explore shifts in tone and emotional language across political parties and debate roles. This question is interesting as it reveals how changes in debate sentiment reflect shifts in the way politicians communicate and how the different parties may present themselves and then be interpreted by the public through their words, which is especially relevant with the upcoming presidential election and the recent debates. 
@@ -325,16 +326,6 @@ t_test_result <- t.test(emotional_valence ~ year, data = all_sentiments)
 ## Welch Two Sample t-test
 We also conducted a Welch Two Sample t-test to compare the emotional valence of participants in the 2012 and 2024 debates. We found a statistically significant difference (t = 2.2763, p = 0.02319), testing at a level $\alpha = 0.05$, which indicates that the emotional valence of participants in 2024 was significantly more negative (mean = -0.1526) compared to those in 2012 (mean = -0.0392), with a 95% confidence interval for the true difference in means ranging from 0.0156 to 0.2113.
 
-<!-- <!-- I'm not sure about the validity of this test since we don't know if the data is normally distributed ****** --> -->
-
-<!-- ```{r} -->
-<!-- #also not sure about this test since the data is not necessarily symmetric -->
-<!-- emotional_valence_2012 <- c(0.0584797, -0.0117412,	-0.1641919)   -->
-<!-- emotional_valence_2024 <- c(0.0472646, -0.1431562, -0.3618718)   -->
-<!-- wilcox_test_result <- wilcox.test(emotional_valence_2012, emotional_valence_2024) -->
-<!-- print(wilcox_test_result) -->
-<!-- ``` -->
-
 
 ## Keyness and Frequency Analysis for Adjectives
 
@@ -427,6 +418,8 @@ trump_all_dfm <- dfm(anno_trump_tkns)
 
 We then decided to look at the keyness tables for the Democratic and Republican candidates to determine what words might have been influential in their overal sentiments. We found that adjectives where the most statistically significant, with the most frequent verbs, nouns, and other parts of speech being far more generic and neutral.
 
+\newpage
+
 ```{r}
 ### KEYNESS TABLES ####
 ###Key: jj = adj.; vb = verb; nn = noun, prp = pronoun; vbp = ??? rb = ???, in/to = preposition
@@ -451,7 +444,8 @@ harris_v_obama |>
               heading.padding = px(2),
               heading.title.font.size = "small",
               heading.subtitle.font.size = "small",
-              table.font.size = "small")
+              table.font.size = "small",
+              table.align = "left")
 ```
 
 ```{r}
@@ -478,10 +472,13 @@ obama_v_harris |>
               heading.padding = px(2),
               heading.title.font.size = "small",
               heading.subtitle.font.size = "small",
-              table.font.size = "small")
+              table.font.size = "small",
+              table.align = "left")
 ```
 
 Evidently, most of the most frequent adjectives for both Obama and Harris are neutral. More than that, there appears to be very little overlap between the two sub-corpus in terms of average frequency.
+
+\newpage
 
 ```{r}
 ### KEYNESS TABLES ####
@@ -508,7 +505,8 @@ romney_v_trump |>
               heading.padding = px(2),
               heading.title.font.size = "small",
               heading.subtitle.font.size = "small",
-              table.font.size = "small")
+              table.font.size = "small",
+              table.align = "left")
 ```
 
 ```{r}
@@ -534,7 +532,8 @@ trump_v_romney |>
               heading.padding = px(2),
               heading.title.font.size = "small",
               heading.subtitle.font.size = "small",
-              table.font.size = "small")
+              table.font.size = "small",
+              table.align = "left")
 ```
 
 ```{r}
