@@ -1,89 +1,542 @@
 ---
-title: "Lab Set 3"
-author: "My Name"
+title: "CBE 1"
+author: "Amalia, Lauren, and Jenny"
 date: last-modified
 format:
   pdf:
     number-sections: true
-include-in-header: 
-  text: |
-    \usepackage{fvextra}
-    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
-
+    indent: true
+    toc: true
+    include-in-header:
+      text: |
+        \addtokomafont{disposition}{\rmfamily}
+        \usepackage{fvextra}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+execute:
+  echo: false
 ---
 
-# Lab Set 3
+# Introduction
 
-## Dependency parsing
+This project conducts a sentiment analysis to compare the sentiment expressed by Democrats, Republicans, and moderators in presidential debates, focusing on how it has changed over time and how it might differ between parties. We analyze debates from 2012 and 2024 to explore shifts in tone and emotional language across political parties and debate roles. This question is interesting as it reveals how changes in debate sentiment reflect shifts in the way politicians communicate and how the different parties may present themselves and then be interpreted by the public through their words, which is especially relevant with the upcoming presidential election and the recent debates. 
 
-```{r}
-library(tidyverse)
+# Data
+
+The data for this study consists of the first presidential debate transcripts from Obama vs. Romney (2012) and Harris vs. Trump (2024). These transcripts were obtained online and then divided based on who was speaking, with three groups identified for each debate: Democrat, Republican, and Moderator. For the 2024 debate there were two moderators which were grouped together in a single category. A python script was used to perform pre-processing on the data and divide it properly.
+
+```{r, include=FALSE}
+library(udpipe)
+source("../R/helper_functions.R")
 library(quanteda)
+library(quanteda.textstats)
+library(tidyverse)
+library(sentimentr)
+library(knitr)
 library(gt)
-source("../R/mda_functions.R")
-
-load("../data/ds_dict.rda")
-load("../data/micusp_mini.rda")
+library(syuzhet)
+library(tidyverse)
+library(dplyr)
+source("../R/helper_functions.R")
+source("../R/keyness_functions.R")
 ```
-### Task 1
+```{r, include=FALSE}
+#processing all 6 texts
 
-From the keyness table (**acad_v_fic**), identify the preposition with the highest keyness value. Report the relevant statistics (including frequencies and dispersions) following the conventions described in Brezina.
+obama_txt <- readLines("2012_processing/obama.txt")
+romney_txt <- readLines("2012_processing/romney.txt")
+obama_mod_txt <- readLines("2012_processing/2012_moderator.txt")
+trump_txt <- readLines("2024_processing/trump.txt")
+harris_txt <- readLines("2024_processing/harris.txt")
+harris_mod_txt <- readLines("2024_processing/2024_moderators.txt")
 
-> The preposition with the highest keyness value is "may." It has an absolute frequency in the academic text-type (the target) of 13 and an absolute frequency in the fiction text-type (the reference) of 5. The dispersion value in the target is 0.165 and the dispersion value in the reference is 0.401. 
+# obama_txt <- readLines("obama.txt")
+# romney_txt <- readLines("romney.txt")
+# obama_mod_txt <- readLines("2012_moderator.txt")
+# trump_txt <- readLines("trump.txt")
+# harris_txt <- readLines("harris.txt")
+# harris_mod_txt <- readLines("2024_moderators.txt")
 
-Create a KWIC table (with the preposition as the node word and a context window of 3) of 10 rows.
+obama_corpus <- obama_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE)
+  
+obama_freq <- obama_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+
+trump_freq <- trump_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+
+romney_freq <- romney_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+
+harris_freq <- harris_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+
+obama_mod_freq <- obama_mod_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+
+harris_mod_freq <- harris_mod_txt %>%
+corpus() %>%
+tokens(what = "word", remove_punct = TRUE) %>%
+dfm() %>%
+textstat_frequency() %>%
+as_tibble() %>%
+dplyr::select(feature, frequency) %>%
+rename(Token = feature, AF = frequency) %>%
+mutate(RF = AF/sum(AF)*100)
+```
+
+```{r}
+#corpus summary
+
+total_obama_tokens <- sum(obama_freq$AF)
+total_trump_tokens <- sum(trump_freq$AF)
+total_romney_tokens <- sum(romney_freq$AF)
+total_harris_tokens <- sum(harris_freq$AF)
+total_obama_mod_tokens <- sum(obama_mod_freq$AF)
+total_harris_mod_tokens <- sum(harris_mod_freq$AF)
+
+all_tokens <- tibble::tibble(
+  Candidate = c("Obama", "Romney", "Harris", "Trump", "Obama Moderator", "Harris Moderators"),
+  Tokens = c(total_obama_tokens, total_romney_tokens, total_trump_tokens, total_harris_tokens, total_obama_mod_tokens, total_harris_mod_tokens)
+)
+
+debate_tokens <- tibble::tibble(
+  Candidate = c("2012", "2024"),
+  Tokens = c(total_obama_tokens + total_romney_tokens + total_obama_mod_tokens, total_trump_tokens + total_harris_tokens + total_harris_mod_tokens)
+)
+
+all_tokens %>%
+  knitr::kable(col.names = c("Debate Participant", "Total Tokens"), 
+               caption = "Number of Tokens by Speaker")
+
+debate_tokens %>%
+  knitr::kable(col.names = c("Year", "Total Tokens"), 
+               caption = "Number of Tokens Spoken by Year")
+
+```
+
+Tables 1 and 2 summarize the distribution across parties and years. The words spoken by moderators nearly doubled between the two debates, which is partially due to the fact that there were two moderators instead of one. Trump spoke the least out of the four presidential candidates and Romney spoke the most. The 2024 debate was slightly longer, and overall the Republicans talked more than the Democrats.
 
 ```{r}
 
-micusp_tokens <- micusp_mini %>%
-  corpus() %>%
-  tokens(remove_punct = F, remove_numbers = F, remove_symbols = F, what = "word")
+#overall sentiments of the texts
+obama_sentiment_scores <- sentiment(obama_txt)
+obama_overall_sentiment <- mean(obama_sentiment_scores$sentiment)
 
-ch <- kwic(micusp_tokens, ds_dict["may"])
-ch |>
+trump_sentiment_scores <- sentiment(trump_txt)
+trump_overall_sentiment <- mean(trump_sentiment_scores$sentiment)
+
+romney_sentiment_scores <- sentiment(romney_txt)
+romney_overall_sentiment <- mean(romney_sentiment_scores$sentiment)
+
+harris_sentiment_scores <- sentiment(harris_txt)
+harris_overall_sentiment <- mean(harris_sentiment_scores$sentiment)
+
+harris_mod_sentiment_scores <- sentiment(harris_mod_txt)
+harris_mod_overall_sentiment <- mean(harris_mod_sentiment_scores$sentiment)
+
+obama_mod_sentiment_scores <- sentiment(obama_mod_txt)
+obama_mod_overall_sentiment <- mean(obama_mod_sentiment_scores$sentiment)
+```
+
+```{r}
+sentiment_results <- data.frame(
+  Speaker = c("Obama", "Romney", "Trump", "Harris", "Harris Moderator", "Obama Moderator"),
+  Overall_Sentiment = c(
+    mean(obama_sentiment_scores$sentiment),
+    mean(romney_sentiment_scores$sentiment),
+    mean(trump_sentiment_scores$sentiment),
+    mean(harris_sentiment_scores$sentiment),
+    mean(harris_mod_sentiment_scores$sentiment),
+    mean(obama_mod_sentiment_scores$sentiment)
+  )
+)
+
+kable(sentiment_results, caption = "Overall Sentiment Scores of Presidential Debate Speakers")
+```
+
+The overall sentiment analysis of the presidential debate transcripts produced the overall sentiment scores for each participant found in Table 3. The results indicate that Obama, Romney, and Harris displayed positive sentiments, while Trump had a slightly negative sentiment. The moderators for both debates showed slightly positive sentiment scores.
+
+# Methods
+
+First, we compare the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time. We used the sentimentr and text libraries in R for the analysis, cleaning the text data and segmenting it into sentences to calculate sentiment scores.This method was chosen because it effectively captures the shifts in sentiment across different segments of the debates, showing how sentiment can vary not only between candidates but also across time during each debate. It also makes easier to identify trends and compare emotional responses from the Democrats, Republicans, and moderators.
+
+We further categorized our corpuses by part-of-speech - focusing on adjectives since they have the greatest crossover with sentiment. From this, we preformed keyness table analysis to identify differences within parties and across years and frequency and dispersion analysis to identify the most common adjectives for each candidate. We included the sentiment denomination of these words according to the **ENTER LEXICON NAME HERE** lexicon to determine if a candidate has frequent usage of neutral, positive, or negative language. This methods was chosen because it allows us to view the words within the corpuses and draw more specified conclusions across time.
+
+
+# Results
+
+## Emotional Valence
+
+```{r, fig.cap="Emotional Valence vs. Time for the 2012 Debate Participants", out.height = "40%"}
+par(mfrow = c(1, 3))
+
+
+obama <- str_squish(obama_txt)
+obama_sentences <- get_sentences(obama)
+
+obama_sentiment <- get_sentiment(obama_sentences)
+obama_dct <- get_dct_transform(obama_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+obama_dct <- data.frame(dct = obama_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(obama_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence",main = "Obama", col = "red")
+
+romney <- str_squish(romney_txt)
+romney_sentences <- get_sentences(romney)
+
+romney_sentiment <- get_sentiment(romney_sentences)
+romney_dct <- get_dct_transform(romney_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+romney_dct <- data.frame(dct = romney_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(romney_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "Romney",col = "red")
+
+obama_mod <- str_squish(obama_mod_txt)
+obama_mod_sentences <- get_sentences(obama_mod)
+
+obama_mod_sentiment <- get_sentiment(obama_mod_sentences)
+obama_mod_dct <- get_dct_transform(obama_mod_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+obama_mod_dct <- data.frame(dct = obama_mod_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(obama_mod_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "2012 Moderator", col = "red")
+# mtext("Sentiment vs. Time for the 2012 Presidential Debate",side = 3, line = -2, outer = TRUE, cex = 1)
+
+```
+
+
+```{r fig.cap="Emotional Valence vs. Time for the 2024 Debate Participants", out.height = "40%"}
+par(mfrow = c(1, 3))
+trump <- str_squish(trump_txt)
+trump_sentences <- get_sentences(trump)
+
+trump_sentiment <- get_sentiment(trump_sentences)
+trump_dct <- get_dct_transform(trump_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+trump_dct <- data.frame(dct = trump_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(trump_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "Trump", col = "red")
+
+harris <- str_squish(harris_txt)
+harris_sentences <- get_sentences(harris)
+
+harris_sentiment <- get_sentiment(harris_sentences)
+harris_dct <- get_dct_transform(harris_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+harris_dct <- data.frame(dct = harris_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(harris_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "Harris",col = "red")
+
+harris_mod <- str_squish(harris_mod_txt)
+harris_mod_sentences <- get_sentences(harris_mod)
+
+harris_mod_sentiment <- get_sentiment(harris_mod_sentences)
+harris_mod_dct <- get_dct_transform(harris_mod_sentiment, low_pass_size = 5, x_reverse_len = 100, scale_vals = FALSE, scale_range = TRUE)
+
+harris_mod_dct <- data.frame(dct = harris_mod_dct) %>%
+  rownames_to_column("time") %>%
+  mutate(time = as.numeric(time))
+
+plot(harris_mod_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valence", main = "2024 Moderators", col = "red")
+
+```
+
+First, we analyze the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time in Figures 1 and 2. In 2012, Obama, Romney, and the moderator all exhibited fluctuating emotional valences. In contrast, the 2024 debate displayed Trump experiencing a dramatic initial drop in emotional valence, followed by a rise, while Harris reflected similar fluctuations, though less pronounced. The moderators in 2024 showed more dramatic fluctuations than Trump. Notably, all participants in the 2024 debate had similar trends in emotional valence. However, in the 2012 debate, the candidates showed similar patterns that were almost opposite to that of the moderator.
+
+```{r}
+all_dcts <- bind_rows(
+  mutate(obama_dct, participant = "Obama"),
+  mutate(romney_dct, participant = "Romney"),
+  mutate(trump_dct, participant = "Trump"),
+  mutate(harris_dct, participant = "Harris"),
+  mutate(obama_mod_dct, participant = "2012 Moderator"),
+  mutate(harris_mod_dct, participant = "2024 Moderator")
+)
+
+average_valence <- all_dcts %>%
+  group_by(participant) %>%
+  summarise(average_valence = mean(dct, na.rm = TRUE))
+
+average_valence %>%
+  kable(caption = "Average Emotional Valence by Participant")
+```
+
+We also found the average emotional valence values for each participant in Table 4. All presidential candidates had a slightly negative average emotional valence value, though Trump seemed to be the most negative. The moderators were slightly more positive in that regard. 
+
+
+```{r}
+all_sentiments <- data.frame(
+  year = c(rep("2012", nrow(obama_dct)), rep("2012", nrow(romney_dct)), rep("2012", nrow(obama_mod_dct)),
+            rep("2024", nrow(trump_dct)), rep("2024", nrow(harris_dct)), rep("2024", nrow(harris_mod_dct))),
+  emotional_valence = c(obama_dct$dct, romney_dct$dct, obama_mod_dct$dct,
+                        trump_dct$dct, harris_dct$dct, harris_mod_dct$dct)
+)
+
+t_test_result <- t.test(emotional_valence ~ year, data = all_sentiments)
+```
+
+## Welch Two Sample t-test
+We also conducted a Welch Two Sample t-test to compare the emotional valence of participants in the 2012 and 2024 debates. We found a statistically significant difference (t = 2.2763, p = 0.02319), testing at a level $\alpha = 0.05$, which indicates that the emotional valence of participants in 2024 was significantly more negative (mean = -0.1526) compared to those in 2012 (mean = -0.0392), with a 95% confidence interval for the true difference in means ranging from 0.0156 to 0.2113.
+
+<!-- <!-- I'm not sure about the validity of this test since we don't know if the data is normally distributed ****** --> -->
+
+<!-- ```{r} -->
+<!-- #also not sure about this test since the data is not necessarily symmetric -->
+<!-- emotional_valence_2012 <- c(0.0584797, -0.0117412,	-0.1641919)   -->
+<!-- emotional_valence_2024 <- c(0.0472646, -0.1431562, -0.3618718)   -->
+<!-- wilcox_test_result <- wilcox.test(emotional_valence_2012, emotional_valence_2024) -->
+<!-- print(wilcox_test_result) -->
+<!-- ``` -->
+
+
+## Keyness and Frequency Analysis for Adjectives
+
+```{r, include=FALSE}
+#POS parsing for Verbs to make Keyness Tables
+#got most of this code from notes
+#nn to match nouns and jj to match adjectives
+
+ud_model <- udpipe_load_model("../models/english-ewt-ud-2.5-191206.udpipe")
+obama_annotations <- udpipe(obama_txt, ud_model)
+rommney_annotations <- udpipe(romney_txt, ud_model)
+harris_annotations <- udpipe(harris_txt, ud_model)
+trump_annotations <- udpipe(trump_txt, ud_model)
+
+```
+
+```{r, include=FALSE}
+##OBAMA SECTION ##
+anno_obama_tkns <- obama_annotations %>%
+  dplyr::select(doc_id, sentence_id, token_id, token, lemma, upos, xpos, head_token_id, dep_rel) %>%
+  rename(pos = upos, tag = xpos) %>%
+  structure(class = c("spacyr_parsed", "data.frame")) %>%
+  as.tokens(include_pos = "tag", concatenator = "_")
+
+obama_doc_categories <- names(anno_obama_tkns) %>%
+  data.frame(text_type = .) %>%
+  mutate(text_type = str_extract(text_type, "^[a-z]+"))
+
+docvars(anno_obama_tkns) <- obama_doc_categories
+
+obama_all_dfm <- dfm(anno_obama_tkns)
+
+```
+
+```{r, include=FALSE}
+##ROMNEY SECTION ##
+anno_romney_tkns <- rommney_annotations %>%
+  dplyr::select(doc_id, sentence_id, token_id, token, lemma, upos, xpos, head_token_id, dep_rel) %>%
+  rename(pos = upos, tag = xpos) %>%
+  structure(class = c("spacyr_parsed", "data.frame")) %>%
+  as.tokens(include_pos = "tag", concatenator = "_")
+
+romney_doc_categories <- names(anno_romney_tkns) %>%
+  data.frame(text_type = .) %>%
+  mutate(text_type = str_extract(text_type, "^[a-z]+"))
+
+docvars(anno_romney_tkns) <- romney_doc_categories
+
+romney_all_dfm <- dfm(anno_romney_tkns)
+
+```
+
+
+```{r, include=FALSE}
+##HARRIS SECTION ##
+anno_harris_tkns <- harris_annotations %>%
+  dplyr::select(doc_id, sentence_id, token_id, token, lemma, upos, xpos, head_token_id, dep_rel) %>%
+  rename(pos = upos, tag = xpos) %>%
+  structure(class = c("spacyr_parsed", "data.frame")) %>%
+  as.tokens(include_pos = "tag", concatenator = "_")
+
+harris_doc_categories <- names(anno_harris_tkns) %>%
+  data.frame(text_type = .) %>%
+  mutate(text_type = str_extract(text_type, "^[a-z]+"))
+
+docvars(anno_harris_tkns) <- harris_doc_categories
+
+harris_all_dfm <- dfm(anno_harris_tkns)
+
+
+```
+
+```{r, include=FALSE}
+##TRUMP SECTION ##
+anno_trump_tkns <- trump_annotations %>%
+  dplyr::select(doc_id, sentence_id, token_id, token, lemma, upos, xpos, head_token_id, dep_rel) %>%
+  rename(pos = upos, tag = xpos) %>%
+  structure(class = c("spacyr_parsed", "data.frame")) %>%
+  as.tokens(include_pos = "tag", concatenator = "_")
+
+trump_doc_categories <- names(anno_trump_tkns) %>%
+  data.frame(text_type = .) %>%
+  mutate(text_type = str_extract(text_type, "^[a-z]+"))
+
+docvars(anno_trump_tkns) <- trump_doc_categories
+
+trump_all_dfm <- dfm(anno_trump_tkns)
+
+```
+
+We then decided to look at the keyness tables for the Democratic and Republican candidates to determine what words might have been influential in their overal sentiments. We found that adjectives where the most statistically significant, with the most frequent verbs, nouns, and other parts of speech being far more generic and neutral.
+
+```{r}
+### KEYNESS TABLES ####
+###Key: jj = adj.; vb = verb; nn = noun, prp = pronoun; vbp = ??? rb = ???, in/to = preposition
+harris_v_obama <- keyness_table(harris_all_dfm, obama_all_dfm) %>%
+  separate(col = Token, into = c("Token", "Tag"), sep = "_") %>%
+  filter(Tag == "jj") %>%
+  select(-Tag) %>%
+  select(-DP_Ref)
+
+harris_v_obama |>
   head(10) |>
   gt() |>
+  tab_header(
+    title = "Keyness Table",
+    subtitle = "Comparison of Harris to the Obama reference corpus"
+  ) |>
+  fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
+  fmt_number(columns = c('DP_Tar'), decimals = 3) |>
+  fmt_number(columns = c('PV'), decimals = 5) |>
   as_raw_html()
-
 ```
 
-Posit an explanation for the higher frequency of the preposition in the target corpus (academic writing) vs. the reference corpus (fiction).
+```{r}
 
-> Your response
+obama_v_harris <- keyness_table(obama_all_dfm, harris_all_dfm) %>%
+  separate(col = Token, into = c("Token", "Tag"), sep = "_") %>%
+  filter(Tag == "jj") %>%
+  select(-Tag) %>%
+  select(-DP_Ref)
 
-### Task 2
 
-Calculate the mean length of the noun phrases in the 2 two text-types (**acad_nps** and **fic_nps**). Report the results and posit an explanation for the findings that connects to the previous findings related to prepositions.
+obama_v_harris |>
+  head(10) |>
+  gt() |>
+  tab_header(
+    title = "Keyness Table",
+    subtitle = "Comparison of Obama to the Harris reference corpus"
+  ) |>
+  fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
+  fmt_number(columns = c('DP_Tar'), decimals = 3) |>
+  fmt_number(columns = c('PV'), decimals = 5) |>
+  as_raw_html()
+```
 
-> Your response
+Evidently, most of the most frequent adjectives for both Obama and Harris are neutral. More than that, there appears to be very little overlap between the two sub-corpus in terms of average frequency.
 
-## Logistic regression
+```{r}
+### KEYNESS TABLES ####
+###Key: jj = adj.; vb = verb; nn = noun, prp = pronoun; vbp = ??? rb = ???, in/to = preposition
 
-### Task 1
+romney_v_trump <- keyness_table(romney_all_dfm, trump_all_dfm) %>%
+  separate(col = Token, into = c("Token", "Tag"), sep = "_") %>%
+  filter(Tag == "jj") %>%
+  select(-Tag) %>%
+  select(-DP_Ref)
 
-Following the example in Brezina (pg. 129), report and briefly interpret the output of the regression model  (**wt_regs**, line 245).
+romney_v_trump |>
+  head(10) |>
+  gt() |>
+  tab_header(
+    title = "Keyness Table",
+    subtitle = "Comparison of Romney to the Trump reference corpus"
+  ) |>
+  fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
+  fmt_number(columns = c('DP_Tar'), decimals = 3) |>
+  fmt_number(columns = c('PV'), decimals = 5) |>
+  as_raw_html() 
+```
 
-> Your response
+```{r}
 
-## Task 2
+trump_v_romney <- keyness_table(trump_all_dfm, romney_all_dfm) %>%
+  separate(col = Token, into = c("Token", "Tag"), sep = "_") %>%
+  filter(Tag == "jj") %>%
+  select(-Tag) %>%
+  select(-DP_Ref)
 
-Write a brief interpretation of the probability curves illustrated in Figure 5.
+trump_v_romney |>
+  head(10) |>
+  gt() |>
+  tab_header(
+    title = "Keyness Table",
+    subtitle = "Comparison of Trump to the Romney reference corpus"
+  ) |>
+  fmt_number(columns = c('LL', 'LR', 'Per_10.3_Tar', 'Per_10.3_Ref'), decimals = 2) |>
+  fmt_number(columns = c('DP_Tar'), decimals = 3) |>
+  fmt_number(columns = c('PV'), decimals = 5) |>
+  as_raw_html() 
+```
 
-> Your response
+From the Trump and Romney discussion, we saw similar pattern of a lack of overlap in high frequency words. However, interestingly the Romney sub corpus more frequently has far more words with a positive sentiment, such as *strong*, *right*, and *peaceful* where many of the most frequent words in the Trump sub corpus have a negative sentiment, such as *bad*, *weak*, *horrible*, *guilty*, and *afraid*.
 
-## Multi-dimensional analysis
+# Discussion
 
-### Task 1
+Most interesting is the difference between the four career politician candidates - Obama, Romney, and Harris - and the non career politician candidate - Trump. Trump would appear far more willing to use negative language. Beyond this, it appears that the sentiment of the candidates language is more informed by the time period than it is by their party. Even though Harris has an overall more positive sentiment when compared to Trump, the two are more negative than their part predecessors - Romney and Obama.
 
-Brezina similarly plots the Brown corpus registers on pg. 169. His process is a little different. Rather than extracting factor loadings from the Brown corpus, he uses the loadings from the original Biber data (some of which are listed on pg. 168).
+The validity of our t-test is unclear because of the source data's distribution. Using such a small sample size means that we cannot determine if it is normally distributed. Although it was found that the emotional valence was significantly more negative, the true meaning of this significance cannot be validated from the data in this report.
 
-Our loadings for dimension 1 are similar to Biber's, though with some differences. Likewise, the resulting plot is similar to the one on pg. 169. Why is this the case, do you think? (If you want to check Biber's description of his corpus, it's on pg. 66 of his book.)
+A future analysis would involve drawing on the transcripts from additional presidential debates. This would allow us to better see trends over time since we would have more than two data points. One example of deeper analysis would be a sentiment and valence comparison across incumbents. We could also look at the use of specific tokens and which topics have remained relevent for many years.
 
-> Your response
 
-### Task 2
+# Acknowledgments {.appendix}
 
-Using information from the factor loadings, the positions of the disciplines along the dimension, and KWIC tables, name dimension 1 following the X vs. Y convention. In a couple of sentences, explain your reasoning.
 
-> Your response
+ChatGPT was used to help generate the first draft. This primarily took the form of supplementing our lack of knowledge of different forms of sentiment analysis and certain statistical concepts. We asked the LLM about different forms of sentiment analysis and what libraries should be used to preforms said analysis in R. We also used the LLM to develop the code used for initially parsing the text into their separate text files in python. When attempting to fit the Keyness tables on the pdf, I made many queries to the LLM about my problem. In this regard, the LLM was extremely unhelpful as none of its suggestions fixed the problem and they ultimately did not make it to the final product. The LLM was also used to generate a certain amount of regex lines since I am unfamiliar with the necessary syntax. This ultimately also did not make it to the final report since the analysis in which it was used was deemed unnecessary. Ultimately, the LLM was far more useful in supplementing our knowledge of sentiment analysis than it was in our knowledge/implementation of the R code.
 
+# Works Cited
+
+1. Brown, D. W. (n.d.). textstat documentation. https://browndw.github.io/textstat_docs/
+
+2. Commission on Presidential Debates. (n.d.). Debate transcripts. Debates.org. https://www.debates.org/voter-education/debate-transcripts/
+
+3. Flynn, L. (2019, June 18). Comparing sentiment analysis dictionaries in R. Medium. https://medium.com/@laurenflynn1211/comparing-sentiment-analysis-dictionaries-in-r-c695fca64326
