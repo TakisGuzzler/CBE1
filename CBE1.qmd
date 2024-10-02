@@ -196,11 +196,11 @@ The overall sentiment analysis of the presidential debate transcripts produced t
 
 # Methods
 
-First, we compare the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time. We used the sentimentr and text libraries in R for the analysis, cleaning the text data and segmenting it into sentences to calculate sentiment scores.This method was chosen because it effectively captures the shifts in sentiment across different segments of the debates, showing how sentiment can vary not only between candidates but also across time during each debate. It also makes easier to identify trends and compare emotional responses from the Democrats, Republicans, and moderators.
+First, we compare the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time. We used the sentimentr and text libraries in R for the analysis, cleaning the text data and segmenting it into sentences to calculate sentiment scores. This method was chosen because it effectively captures the shifts in sentiment across different segments of the debates, showing how sentiment can vary not only between candidates but also across time during each debate. It also makes easier to identify trends and compare emotional responses from the Democrats, Republicans, and moderators.
 
 We also chose to use a Welch Two Sample t-test because it accounts for unequal variances between groups and doesn't require equal sample sizes. This method tests for whether the average emotional valences from the 2012 and 2024 debates are significantly different. Thus, the Welch test can help us draw conclusions about changes in emotional tone across the two years and reveal trends or shifts in how debate participants spoke.
 
-We further categorized our corpuses by part-of-speech - focusing on adjectives since they have the greatest crossover with sentiment. From this, we preformed keyness table analysis to identify differences within parties and across years and frequency and dispersion analysis to identify the most common adjectives for each candidate. We included the sentiment denomination of these words according to the "bing", "afinn", "loughran", "nrc" lexicons to determine if a candidate has frequent usage of neutral, positive, or negative language. This methods was chosen because it allows us to view the words within the corpuses and draw more specified conclusions across time.
+We further categorized our corpuses by part-of-speech - focusing on adjectives since they have the greatest crossover with sentiment. From this, we performed keyness table analysis to identify differences within parties and across years and frequency and dispersion analysis to identify the most common adjectives for each candidate. We included the sentiment denomination of these words according to the "bing", "afinn", "loughran", "nrc" lexicons to determine if a candidate has frequent usage of neutral, positive, or negative language. This method was chosen because it allows us to view the words within the corpuses and draw more specified conclusions across time.
 
 
 # Results
@@ -292,26 +292,6 @@ plot(harris_mod_dct, type ="l", xlab = "Narrative Time", ylab = "Emotional Valen
 ```
 
 First, we analyze the emotional valence expressed by Democrats, Republicans, and moderators in the 2012 and 2024 presidential debates over time in Figures 1 and 2. In 2012, Obama, Romney, and the moderator all exhibited fluctuating emotional valences. In contrast, the 2024 debate displayed Trump experiencing a dramatic initial drop in emotional valence, followed by a rise, while Harris reflected similar fluctuations, though less pronounced. The moderators in 2024 showed more dramatic fluctuations than Trump. Notably, all participants in the 2024 debate had similar trends in emotional valence. However, in the 2012 debate, the candidates showed similar patterns that were almost opposite to that of the moderator.
-
-```{r}
-all_dcts <- bind_rows(
-  mutate(obama_dct, participant = "Obama"),
-  mutate(romney_dct, participant = "Romney"),
-  mutate(trump_dct, participant = "Trump"),
-  mutate(harris_dct, participant = "Harris"),
-  mutate(obama_mod_dct, participant = "2012 Moderator"),
-  mutate(harris_mod_dct, participant = "2024 Moderator")
-)
-
-average_valence <- all_dcts %>%
-  group_by(participant) %>%
-  summarise(average_valence = mean(dct, na.rm = TRUE))
-
-average_valence %>%
-  kable(caption = "Average Emotional Valence by Participant")
-```
-
-We also found the average emotional valence values for each participant in Table 4. All presidential candidates had a slightly negative average emotional valence value, though Trump seemed to be the most negative. The moderators were slightly more positive in that regard. 
 
 
 ```{r}
@@ -418,7 +398,7 @@ trump_all_dfm <- dfm(anno_trump_tkns)
 
 ```
 
-We then decided to look at the keyness tables for the Democratic and Republican candidates to determine what words might have been influential in their overal sentiments. We found that adjectives where the most statistically significant, with the most frequent verbs, nouns, and other parts of speech being far more generic and neutral.
+We then decided to look at the keyness tables for the Democratic and Republican candidates to determine what words might have been influential in their overall sentiments. We found that adjectives where the most statistically significant, with the most frequent verbs, nouns, and other parts of speech being far more generic and neutral.
 
 \newpage
 
@@ -478,7 +458,7 @@ obama_v_harris |>
               table.align = "left")
 ```
 
-Majority of the most frequent adjectives for both Obama and Harris are neutral. The Harris data has the negative adjectives *tired* and *weak* as the 6th and 7th most frequent adjectives and the Obama data has the positive adjectives *safe*, *effective*, and *glad* as the 3rd, 8th, and 9th most frequent adjectives. There appears to be very little overlap between the two sub-corpus in terms of frequency of adjectives. All adjectives are infrequent within the corpus, with the most frequent adjective from Obama relating to sentiment - *safe* - appearing 0.73 times per 100 tokens and the most frequent adjective from Harris relating to sentiment - *tired* - appearing 0.44 times per 100 tokens.
+The majority of the most frequent adjectives for both Obama and Harris are neutral. The Harris data has the negative adjectives *tired* and *weak* as the 6th and 7th most frequent adjectives and the Obama data has the positive adjectives *safe*, *effective*, and *glad* as the 3rd, 8th, and 9th most frequent adjectives. There appears to be very little overlap between the two sub-corpus in terms of frequency of adjectives. All adjectives are infrequent within the corpus, with the most frequent adjective from Obama relating to sentiment - *safe* - appearing 0.73 times per 100 tokens and the most frequent adjective from Harris relating to sentiment - *tired* - appearing 0.44 times per 100 tokens.
 
 \newpage
 
@@ -554,7 +534,7 @@ For Trump and Romney, we saw a similar lack of overlap in high frequency adjecti
 
 # Discussion
 
-Most interesting is the difference between the three career politician candidates - Obama, Romney, and Harris - and the non career politician candidate - Trump. Trump appears more willing to use negative language. The sentiment of the candidates language is likely more so informed by the time period than it is by their party as can be seen in the lack of overlap across years and within parties in the Keyness tables. Even though Harris has a more positive sentiment when compared to Trump, the two are less positive than their party predecessors - Romney and Obama. This could be due to the change in politics over the time period. However, the slightly more negative average emotional valence expressed by the Republic candidates could be attributed to the fact that they were not the incumbents.
+Most interesting is the difference between the three career politician candidates - Obama, Romney, and Harris - and the non career politician candidate - Trump. Trump appears more willing to use negative language. The sentiment of the candidates language is likely more so informed by the time period than it is by their party as can be seen in the lack of overlap across years and within parties in the Keyness tables. Even though Harris has a more positive sentiment when compared to Trump, the two are less positive than their party predecessors - Romney and Obama. This could be due to the change in politics over the time period. 
 
 The emotional valence trends in the 2012 and 2024 presidential debates shed some light on the nature of political discourse. In 2012, both Obama and Romney had fluctuating emotional valences, suggesting they might be having a more dynamic interaction with the moderator and each other, since the moderator's responses were aligned with the candidates. In contrast, the 2024 debate saw Trump experience a dramatic decline in emotional valence followed by an increase in valence until the end of the debate. Harris displayed similar fluctuations, along with similar trends for the moderators. This change in emotional valence demonstrates the changing nature of political debates and could reflect candidate strategies or shifting voter expectations.
 
